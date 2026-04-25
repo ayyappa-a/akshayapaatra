@@ -1146,9 +1146,13 @@
     const getBanners = () => { const saved = localStorage.getItem('adminBanners'); return saved ? JSON.parse(saved) : [...BANNERS_DEFAULT]; };
     const setBanners = d => localStorage.setItem('adminBanners', JSON.stringify(d));
     const getAllProducts = () => {
-      const overrides = getAdminProducts();
+      const admin = getAdminProducts();
+      const isSynced = localStorage.getItem('cloudSynced') === 'true';
+      if (isSynced) {
+        return admin.filter(p => !p.deleted);
+      }
       const merged = [...DEFAULT_PRODUCTS];
-      overrides.forEach(ap => { const i = merged.findIndex(p => p.id === ap.id); i >= 0 ? merged[i] = ap : merged.push(ap); });
+      admin.forEach(ap => { const i = merged.findIndex(p => p.id === ap.id); i >= 0 ? merged[i] = ap : merged.push(ap); });
       return merged.filter(p => !p.deleted);
     };
 
@@ -1324,7 +1328,7 @@
         setAdminProducts(prods); renderProductsTable(); showAdminToast('Stock updated!');
       }
     }
-    function deleteProduct(id) {
+    async function deleteProduct(id) {
       if (!confirm('Delete this product?')) return;
       const prods = getAdminProducts();
       const p = getAllProducts().find(x => x.id === id);
@@ -1333,6 +1337,7 @@
         if (existing) existing.deleted = true;
         else prods.push({ ...p, deleted: true });
         setAdminProducts(prods); renderProductsTable(); showAdminToast('Product deleted!');
+        await upsertProductToCloud(existing || { ...p, deleted: true });
       }
     }
     function bulkAdjustPrices() {
@@ -1646,6 +1651,7 @@
             deleted: p.deleted || false
           }));
           setAdminProducts(mapped);
+          localStorage.setItem('cloudSynced', 'true');
           renderProductsTable();
           renderDashboard();
         }

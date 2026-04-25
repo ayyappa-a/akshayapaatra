@@ -67,6 +67,10 @@ const TESTIMONIALS = [
 // ═══ HELPERS ═══
 const getProducts = () => {
   const admin = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+  const isSynced = localStorage.getItem('cloudSynced') === 'true';
+  if (isSynced) {
+    return admin.filter(p => !p.deleted);
+  }
   const merged = [...DEFAULT_PRODUCTS];
   admin.forEach(ap => { const i = merged.findIndex(p => p.id === ap.id); i >= 0 ? merged[i] = ap : merged.push(ap); });
   return merged.filter(p => !p.deleted);
@@ -680,6 +684,7 @@ const syncFromCloud = async () => {
     }));
 
     localStorage.setItem('adminProducts', JSON.stringify(cloudProducts));
+    localStorage.setItem('cloudSynced', 'true');
 
     renderProducts();
     initDynamicHero();

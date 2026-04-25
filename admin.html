@@ -1153,6 +1153,14 @@
       return merged.filter(p => !p.deleted);
     };
 
+    // Like getAllProducts but includes deleted items (needed for full cloud sync)
+    const getAllProductsWithDeleted = () => {
+      const overrides = getAdminProducts();
+      const merged = [...DEFAULT_PRODUCTS];
+      overrides.forEach(ap => { const i = merged.findIndex(p => p.id === ap.id); i >= 0 ? merged[i] = ap : merged.push(ap); });
+      return merged; // NO filter - includes deleted
+    };
+
     // AUTH
     function doLogin() {
       const u = document.getElementById('uname').value.trim();
@@ -1611,19 +1619,22 @@ document.getElementById('productsBody').innerHTML = products.map(p => `
 
     // ═══ SUPABASE CLOUD FUNCTIONS ═══
 
-    // Map JS product → Supabase row
-    const toDbRow = p => ({
-      id: p.id,
-      name: p.name,
-      category: p.category,
-      price_base: p.priceBase,
-      stock: p.stock || 'in',
-      badge: p.badge || 'IN STOCK',
-      image: p.image || '',
-      description: p.desc || '',
-      weights: p.weights || [],
-      deleted: p.deleted || false
-    });
+    // Map JS product → Supabase row (with image fallback for broken paths)
+    const toDbRow = p => {
+      const img = (p.image && p.image.startsWith('http')) ? p.image : 'assets/akshayapaatra-logo.jpeg';
+      return {
+        id: p.id,
+        name: p.name,
+        category: p.category,
+        price_base: p.priceBase,
+        stock: p.stock || 'in',
+        badge: p.badge || 'IN STOCK',
+        image: img,
+        description: p.desc || '',
+        weights: p.weights || [],
+        deleted: p.deleted || false
+      };
+    };
 
     // Upsert single product to Supabase
     const upsertProductToCloud = async (p) => {
@@ -1678,17 +1689,21 @@ document.getElementById('productsBody').innerHTML = products.map(p => `
       } catch (e) { console.warn('loadOrdersFromCloud failed:', e); }
     };
 
-    // Sync ALL current local products to Supabase
+    // Sync ALL current local products to Supabase (including deleted)
     const syncAllToCloud = async () => {
       if (!db) { showAdminToast('⚠️ Supabase not connected'); return; }
       const btn = document.getElementById('syncBtn');
       if (btn) { btn.textContent = '⏳ Syncing...'; btn.disabled = true; }
       try {
-        const all = getAllProducts();
+        // Get ALL products including deleted ones
+        const all = getAllProductsWithDeleted();
         const rows = all.map(toDbRow);
+        // Upsert all (deleted=true items will be hidden on storefront via .eq('deleted',false))
         const { error } = await db.from('products').upsert(rows, { onConflict: 'id' });
         if (error) throw error;
-        showAdminToast(`✅ ${rows.length} products synced to cloud!`);
+        const active = rows.filter(r => !r.deleted).length;
+        const deleted = rows.filter(r => r.deleted).length;
+        showAdminToast(`✅ ${active} active, ${deleted} deleted synced to cloud!`);
       } catch (e) {
         console.error('syncAllToCloud failed:', e);
         showAdminToast('❌ Sync failed: ' + e.message);

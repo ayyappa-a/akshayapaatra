@@ -202,6 +202,7 @@ const renderProducts = () => {
     const img = clone.querySelector('.card-img');
     img.src = product.image || 'assets/akshayapaatra-logo.jpeg';
     img.alt = product.name;
+    img.onerror = () => { img.src = 'assets/akshayapaatra-logo.jpeg'; };
 
     clone.querySelector('.card-desc').innerHTML = highlight(product.desc, searchTerm);
     clone.querySelector('.card-name').innerHTML = highlight(product.name, searchTerm);

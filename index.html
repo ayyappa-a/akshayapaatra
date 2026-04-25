@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Akshaya Paatra - Premium Konaseema Telugu Delicacies</title>
+  <meta name="description"
+    content="Authentic traditional Telugu sweets, snacks and podi from Konaseema, Andhra Pradesh." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <!-- â•â•â• NAVBAR â•â•â• -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="brand">
+        <div class="brand-pot">
+          <img src="assets/akshayapaatra-logo.jpeg" alt="Akshaya Paatra Logo" />
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">AKSHAYA PAATRA</span>
+          <span class="brand-tagline">Konaseema Flavours</span>
+        </div>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#shop" class="nav-link" data-filter="all">Shop All</a></li>
+        <li><a href="#shop" class="nav-link" data-filter="sweets">Sweets</a></li>
+        <li><a href="#shop" class="nav-link" data-filter="snacks">Snacks</a></li>
+        <li><a href="#shop" class="nav-link" data-filter="podi">Podi</a></li>
+        <li><a href="#testimonials" class="nav-link">Testimonials</a></li>
+        <li><a href="admin.html" class="nav-link admin-link">⚙ Admin</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="nav-icon-btn" id="searchToggle" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+        </button>
+        <button class="nav-icon-btn cart-btn" id="cartBtn" aria-label="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <path d="M16 10a4 4 0 0 1-8 0" />
+          </svg>
+          <span class="cart-badge" id="cartBadge">0</span>
+        </button>
+        <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+    <div class="search-bar-wrap" id="searchBarWrap">
+      <div class="search-bar-inner">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+        <input type="search" id="searchInput" placeholder="Search sweets, snacks, podi..." autocomplete="off" />
+        <button class="search-close" id="searchClose">✕</button>
+      </div>
+    </div>
+    <!-- Category Pills for Mobile -->
+    <div class="cat-pills-wrap">
+      <div class="cat-pills">
+        <div class="cat-pill active" data-filter="all">All Items</div>
+        <div class="cat-pill" data-filter="sweets">Sweets</div>
+        <div class="cat-pill" data-filter="snacks">Snacks</div>
+        <div class="cat-pill" data-filter="podi">Podi</div>
+        <div class="cat-pill" data-filter="trending">Trending</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Bottom Navigation for Mobile -->
+  <div class="bottom-nav">
+    <a href="#hero" class="b-nav-item active">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      <span>Home</span>
+    </a>
+    <a href="#shop" class="b-nav-item">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <path d="M16 10a4 4 0 0 1-8 0"></path>
+      </svg>
+      <span>Shop</span>
+    </a>
+    <a href="javascript:void(0)" class="b-nav-item" id="mobileSearchBtn"
+      onclick="document.getElementById('searchToggle').click()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <span>Search</span>
+    </a>
+    <a href="javascript:void(0)" class="b-nav-item" onclick="document.getElementById('cartBtn').click()">
+      <div style="position:relative">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+        </svg>
+        <span class="cart-badge-mini" id="cartBadgeMobile">0</span>
+      </div>
+      <span>Cart</span>
+    </a>
+  </div>
+
+  <!-- â•â•â• HERO â•â•â• -->
+  <section class="hero" id="hero">
+    <!-- Mandala background -->
+    <div class="hero-mandala" aria-hidden="true">
+      <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" class="mandala-svg">
+        <g fill="none" stroke="#c89a43" stroke-opacity="0.12" transform="translate(400,400)">
+          <circle r="50" />
+          <circle r="100" />
+          <circle r="150" />
+          <circle r="200" />
+          <circle r="250" />
+          <circle r="300" />
+          <circle r="350" />
+          <g stroke-opacity="0.08">
+            <line x1="0" y1="-350" x2="0" y2="350" />
+            <line x1="-350" y1="0" x2="350" y2="0" />
+            <line x1="-247" y1="-247" x2="247" y2="247" />
+            <line x1="247" y1="-247" x2="-247" y2="247" />
+            <line x1="-133" y1="-323" x2="133" y2="323" />
+            <line x1="133" y1="-323" x2="-133" y2="323" />
+            <line x1="-323" y1="-133" x2="323" y2="133" />
+            <line x1="323" y1="-133" x2="-323" y2="133" />
+          </g>
+          <g stroke-opacity="0.1">
+            <polygon points="0,-220 190,-110 190,110 0,220 -190,110 -190,-110" />
+            <polygon points="0,-180 156,-90 156,90 0,180 -156,90 -156,-90" />
+            <polygon points="0,-130 112,-65 112,65 0,130 -112,65 -112,-65" />
+          </g>
+          <g fill="#c89a43" fill-opacity="0.1" stroke="none">
+            <circle r="8" cx="0" cy="-200" />
+            <circle r="8" cx="173" cy="-100" />
+            <circle r="8" cx="173" cy="100" />
+            <circle r="8" cx="0" cy="200" />
+            <circle r="8" cx="-173" cy="100" />
+            <circle r="8" cx="-173" cy="-100" />
+            <circle r="5" cx="0" cy="-130" />
+            <circle r="5" cx="112" cy="-65" />
+            <circle r="5" cx="112" cy="65" />
+            <circle r="5" cx="0" cy="130" />
+            <circle r="5" cx="-112" cy="65" />
+            <circle r="5" cx="-112" cy="-65" />
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Decorative top border -->
+    <div class="hero-border-top" aria-hidden="true">
+      <svg viewBox="0 0 1400 30" preserveAspectRatio="none">
+        <path d="M0,15 Q175,0 350,15 T700,15 T1050,15 T1400,15" stroke="#c89a43" stroke-opacity="0.4" fill="none"
+          stroke-width="1.5" />
+        <path d="M0,20 Q175,5 350,20 T700,20 T1050,20 T1400,20" stroke="#c89a43" stroke-opacity="0.2" fill="none"
+          stroke-width="1" />
+      </svg>
+    </div>
+
+    <div class="hero-inner">
+      <!-- LEFT COPY -->
+      <div class="hero-copy" id="heroCopy">
+        <div class="hero-eyebrow-row">
+          <span class="hero-dot"></span>
+          <p class="hero-eyebrow">Est. 2018 · Konaseema, Andhra Pradesh</p>
+          <span class="hero-dot"></span>
+        </div>
+        <h1 class="hero-headline">
+          <span class="hero-hl-top">From Our Home</span>
+          <span class="hero-hl-mid">to Your Heart</span>
+          <em class="hero-hl-brand">— Konaseema Flavours</em>
+        </h1>
+        <p class="hero-sub">Handcrafted traditional Telugu sweets &amp; snacks from the fertile delta of Konaseema. Pure
+          ingredients. No preservatives. Delivered with love.</p>
+        <div class="hero-trust-row">
+          <div class="trust-item"><span class="trust-stars">★★★★★</span><span>500+ Happy Customers</span>
+          </div>
+          <div class="trust-divider">·</div>
+          <div class="trust-item"><span>🚚</span><span>All-India Delivery</span></div>
+        </div>
+        <div class="hero-cta-row">
+          <a href="#shop" class="btn-gold ripple-btn" id="exploreBtn"><span>Explore Flavours</span><svg width="14"
+              height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg></a>
+          <a href="#why" class="btn-ghost-hero">Our Story ↓</a>
+        </div>
+      </div>
+
+      <!-- RIGHT VISUAL -->
+      <div class="hero-visual" id="heroVisual">
+        <div class="hero-ring hero-ring-outer" aria-hidden="true"></div>
+        <div class="hero-ring hero-ring-inner" aria-hidden="true"></div>
+        <div class="hero-center-img">
+          <img id="heroMainImg" src="assets/akshayapaatra-logo.jpeg" alt="Premium traditional sweets" />
+        </div>
+        <div class="hero-float-card hfc-1">
+          <img id="heroImg1" src="assets/akshayapaatra-logo.jpeg" alt="Product 1" />
+          <span id="heroImg1Name">Traditional Sweet</span>
+        </div>
+        <div class="hero-float-card hfc-2">
+          <img id="heroImg2" src="assets/akshayapaatra-logo.jpeg" alt="Product 2" />
+          <span id="heroImg2Name">Premium Snack</span>
+        </div>
+        <div class="hero-float-card hfc-3">
+          <img id="heroImg3" src="assets/akshayapaatra-logo.jpeg" alt="Product 3" />
+          <span id="heroImg3Name">Authentic Podi</span>
+        </div>
+        <div class="hero-badge-fresh">
+          <span class="badge-emoji">🪔</span>
+          <span class="badge-text">Freshly<br />Prepared</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decorative bottom scroll cue -->
+    <div class="scroll-cue">
+      <span>Scroll to explore</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- â•â•â• MARQUEE â•â•â• -->
+  <div class="marquee-strip" aria-hidden="true">
+    <div class="marquee-track">
+      <span>🪔 Bellam Gavvalu</span><span>✦</span><span>ðŸ¬ Bandar Laddu</span><span>✦</span><span>🌾
+        Arriselu</span><span>✦</span><span>🌿 Karivepaku Podi</span><span>✦</span><span>ðŸ¯
+        Pootharekulu</span><span>✦</span><span>🌶️ Kandi Podi</span><span>✦</span>
+      <span>🪔 Bellam Gavvalu</span><span>✦</span><span>ðŸ¬ Bandar Laddu</span><span>✦</span><span>🌾
+        Arriselu</span><span>✦</span><span>🌿 Karivepaku Podi</span><span>✦</span><span>ðŸ¯
+        Pootharekulu</span><span>✦</span><span>🌶️ Kandi Podi</span><span>✦</span>
+    </div>
+  </div>
+
+  <!-- â•â•â• BANNER SLIDER â•â•â• -->
+  <section class="banner-strip" id="bannerStrip">
+    <div class="banner-slider" id="bannerSlider">
+      <div class="banner-slide active" style="--slide-bg:linear-gradient(120deg,#0f3826,#1a5c3f)">
+        <div class="slide-texture"></div>
+        <div class="slide-copy">
+          <span class="slide-tag">🎊 Sankranti Special</span>
+          <h2>Freshly Prepared Arriselu</h2>
+          <p>Traditional Pongal sweet — crispy jaggery discs made the old way.</p>
+          <a href="#shop" class="btn-gold small ripple-btn"><span>Shop — 20% Off</span></a>
+        </div>
+        <div class="slide-img"><img src="assets/items/pexels-gaurav-kumar-1281378-18488314.jpg" alt="Arriselu" /></div>
+      </div>
+      <div class="banner-slide" style="--slide-bg:linear-gradient(120deg,#6b2b0e,#c55828)">
+        <div class="slide-texture"></div>
+        <div class="slide-copy">
+          <span class="slide-tag">🌟 All-Time Favourite</span>
+          <h2>Bandar Laddu</h2>
+          <p>Iconic Andhra coastal laddus — dense, ghee-rich, authentically prepared.</p>
+          <a href="#shop" class="btn-gold small ripple-btn"><span>Order Now</span></a>
+        </div>
+        <div class="slide-img"><img src="assets/items/pexels-vipinvihari-murari-das-2150327057-36460898.jpg"
+            alt="Laddu" /></div>
+      </div>
+      <div class="banner-slide" style="--slide-bg:linear-gradient(120deg,#2b4a1e,#3d6b2c)">
+        <div class="slide-texture"></div>
+        <div class="slide-copy">
+          <span class="slide-tag">✨ New Batch Ready</span>
+          <h2>Pootharekulu</h2>
+          <p>Paper-thin rice starch layers stuffed with ghee and jaggery powder.</p>
+          <a href="#shop" class="btn-gold small ripple-btn"><span>Try Now</span></a>
+        </div>
+        <div class="slide-img"><img src="assets/items/pexels-masuma-rahaman-437541976-34153202.jpg"
+            alt="Pootharekulu" /></div>
+      </div>
+    </div>
+    <div class="banner-controls">
+      <button class="banner-dot active" data-idx="0"></button>
+      <button class="banner-dot" data-idx="1"></button>
+      <button class="banner-dot" data-idx="2"></button>
+    </div>
+    <button class="banner-arrow banner-prev" id="bannerPrev">‹</button>
+    <button class="banner-arrow banner-next" id="bannerNext">›</button>
+  </section>
+
+  <!-- â•â•â• SHOP â•â•â• -->
+  <section class="shop-section" id="shop">
+    <div class="shop-header">
+      <div class="shop-title-wrap">
+        <p class="eyebrow">Fresh &amp; Handcrafted</p>
+        <h2 class="section-title">Our Sweets &amp; Snacks</h2>
+      </div>
+      <div class="filter-row" id="filterRow">
+        <button class="filter-pill active" data-filter="all">All</button>
+        <button class="filter-pill" data-filter="sweets">Sweets</button>
+        <button class="filter-pill" data-filter="snacks">Snacks</button>
+        <button class="filter-pill" data-filter="podi">Podi</button>
+        <button class="filter-pill" data-filter="others">Others</button>
+      </div>
+    </div>
+    <div class="product-grid" id="productGrid" aria-label="Product catalogue"></div>
+  </section>
+
+  <!-- ═══ WHY SECTION — PREMIUM REDESIGN ═══ -->
+  <section class="why-section" id="why">
+
+    <!-- Cinematic background -->
+    <div class="why-bg" aria-hidden="true">
+      <div class="why-grain"></div>
+      <svg class="why-pattern" viewBox="0 0 700 500" preserveAspectRatio="xMidYMid slice">
+        <g opacity="0.06" fill="#c89a43">
+          <ellipse cx="80" cy="250" rx="80" ry="14" transform="rotate(-35 80 250)" />
+          <ellipse cx="80" cy="250" rx="80" ry="14" transform="rotate(-20 80 250)" />
+          <ellipse cx="80" cy="250" rx="80" ry="14" transform="rotate(-5 80 250)" />
+          <ellipse cx="80" cy="250" rx="80" ry="14" transform="rotate(10 80 250)" />
+          <ellipse cx="80" cy="250" rx="80" ry="14" transform="rotate(25 80 250)" />
+          <ellipse cx="620" cy="180" rx="80" ry="14" transform="rotate(-35 620 180)" />
+          <ellipse cx="620" cy="180" rx="80" ry="14" transform="rotate(-20 620 180)" />
+          <ellipse cx="620" cy="180" rx="80" ry="14" transform="rotate(-5 620 180)" />
+          <ellipse cx="620" cy="180" rx="80" ry="14" transform="rotate(10 620 180)" />
+          <ellipse cx="620" cy="180" rx="80" ry="14" transform="rotate(25 620 180)" />
+        </g>
+        <g opacity="0.10" fill="#e6b965">
+          <circle cx="340" cy="60" r="3" />
+          <circle cx="360" cy="60" r="3" />
+          <circle cx="320" cy="60" r="3" />
+          <circle cx="350" cy="75" r="2.5" />
+          <circle cx="330" cy="75" r="2.5" />
+          <circle cx="340" cy="90" r="3" />
+          <circle cx="340" cy="420" r="3" />
+          <circle cx="360" cy="420" r="3" />
+          <circle cx="320" cy="420" r="3" />
+          <circle cx="350" cy="405" r="2.5" />
+          <circle cx="330" cy="405" r="2.5" />
+          <circle cx="340" cy="390" r="3" />
+        </g>
+        <g opacity="0.05" fill="#d4a55a" transform="translate(580,320)">
+          <ellipse cx="0" cy="-35" rx="22" ry="9" />
+          <path d="M-28,-35 Q-40,0 -34,42 Q0,58 34,42 Q40,0 28,-35 Z" />
+          <ellipse cx="0" cy="42" rx="34" ry="10" />
+          <rect x="-5" y="-60" width="10" height="28" rx="5" />
+        </g>
+      </svg>
+      <div class="why-beam why-beam-l"></div>
+      <div class="why-beam why-beam-r"></div>
+    </div>
+
+    <div class="why-visual">
+      <div class="why-img-primary">
+        <img
+          src="https://res.cloudinary.com/dbs2ldktj/image/upload/v1777117984/Gemini_Generated_Image_o1bblto1bblto1bb_ppaidy.png"
+          alt="Artisan preparing Konaseema sweets" loading="lazy" />
+        <div class="why-img-overlay"></div>
+        <div class="why-img-glow"></div>
+      </div>
+      <div class="why-img-accent">
+        <img src="assets/items/pexels-saveurssecretes-9832636.jpg" alt="Pure jaggery ingredients" loading="lazy" />
+      </div>
+      <div class="why-est-badge">
+        <div class="why-badge-ring"></div>
+        <div class="why-badge-inner">
+          <span class="why-badge-year">2018</span>
+          <span class="why-badge-sub">Est. Konaseema</span>
+        </div>
+      </div>
+      <div class="why-heritage-tag">✦ Telugu Heritage ✦</div>
+    </div>
+
+    <div class="why-content">
+      <div class="why-overline-wrap">
+        <span class="why-overline-line"></span>
+        <span class="why-overline-text">Our Quality Promise</span>
+      </div>
+      <h2 class="why-heading">Why Choose<br><em>Akshaya Paatra?</em></h2>
+      <p class="why-lead">Konaseema's rivers, its palms, its people — all woven into every bite. We carry a
+        <strong>200-year-old tradition</strong> forward, one handcrafted batch at a time. This is not just food — this
+        is memory, love, and heritage.
+      </p>
+
+      <div class="why-cards">
+        <article class="why-card">
+          <div class="why-card-icon-wrap">
+            <svg class="why-card-svg" viewBox="0 0 48 48" fill="none">
+              <path d="M8 16l16 8 16-8M8 16v16l16 8 16-8V16M24 24v24" stroke="currentColor" stroke-width="1.6"
+                stroke-linejoin="round" />
+            </svg>
+            <div class="why-card-glow"></div>
+          </div>
+          <div class="why-card-text">
+            <h4>You Select &amp; Order</h4>
+            <p>Browse our authentic menu and select your favorite traditional delicacies.</p>
+          </div>
+          <div class="why-card-accent-line"></div>
+        </article>
+        <article class="why-card">
+          <div class="why-card-icon-wrap">
+            <svg class="why-card-svg" viewBox="0 0 48 48" fill="none">
+              <circle cx="24" cy="24" r="16" stroke="currentColor" stroke-width="1.6" stroke-dasharray="4 4" />
+              <path d="M24 16v8l6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+            </svg>
+            <div class="why-card-glow"></div>
+          </div>
+          <div class="why-card-text">
+            <h4>We Process &amp; Review</h4>
+            <p>We receive your order, review all requirements, and schedule it for immediate preparation.</p>
+          </div>
+          <div class="why-card-accent-line"></div>
+        </article>
+        <article class="why-card">
+          <div class="why-card-icon-wrap">
+            <svg class="why-card-svg" viewBox="0 0 48 48" fill="none">
+              <path d="M16 32h16M12 24h24M18 16h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+              <path d="M8 40h32" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+            </svg>
+            <div class="why-card-glow"></div>
+          </div>
+          <div class="why-card-text">
+            <h4>Freshly Made on the Day</h4>
+            <p>Your order is freshly prepared on the day of dispatch, ensuring maximum shelf life and taste.</p>
+          </div>
+          <div class="why-card-accent-line"></div>
+        </article>
+        <article class="why-card">
+          <div class="why-card-icon-wrap">
+            <svg class="why-card-svg" viewBox="0 0 48 48" fill="none">
+              <rect x="8" y="22" width="32" height="18" rx="3" stroke="currentColor" stroke-width="1.6" />
+              <path d="M14 22v-6q10-8 20 0v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+              <circle cx="24" cy="31" r="4" fill="currentColor" opacity=".2" />
+              <path d="M6 34h2M40 34h2M24 40v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+            </svg>
+            <div class="why-card-glow"></div>
+          </div>
+          <div class="why-card-text">
+            <h4>Hygenic Packing &amp; Fast Delivery</h4>
+            <p>Securely and hygienically vacuum-packed, delivered to you within 3 days.</p>
+          </div>
+          <div class="why-card-accent-line"></div>
+        </article>
+      </div>
+
+      <a href="#shop" class="why-cta">
+        <span>Explore Konaseema Flavours</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round">
+          <path d="M5 12h14M12 5l7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+  </section>
+
+
+  <!-- ═══  TESTIMONIALS ═══  -->
+  <section class="testi-section" id="testimonials">
+    <div class="testi-header">
+      <p class="eyebrow">Customer Love</p>
+      <h2 class="section-title">What People Say</h2>
+      <p class="testi-sub">Drag to explore →</p>
+    </div>
+    <div class="testi-river-wrap">
+      <div class="testi-river" id="testiRiver"></div>
+    </div>
+  </section>
+
+  <!-- ═══ SUPPLY MAP ═══ -->
+  <section class="supply-section">
+    <div class="supply-copy">
+      <p class="eyebrow">All-India Delivery</p>
+      <h2 class="section-title">Global Flavour Supply</h2>
+      <p class="supply-desc">Freshly prepared in Konaseema, delivered across every corner of India.</p>
+      <div class="region-grid">
+        <div class="region-col"><span>🙏 Hyderabad</span><span>🏙️ Bengaluru</span><span>🛒 Chennai</span><span>🌃
+            Mumbai</span><span>🌇 Delhi NCR</span></div>
+        <div class="region-col"><span>🙏 Kolkata</span><span>🏙️ Pune</span><span>🛒 Ahmedabad</span><span>🌃
+            Rajasthan</span><span>🌍 &amp; 20+ more</span></div>
+      </div>
+      <div class="supply-stats">
+        <div class="stat"><strong>23</strong><span>Orders Processing</span></div>
+        <div class="stat"><strong>500+</strong><span>Happy Customers</span></div>
+        <div class="stat"><strong>20+</strong><span>States Reached</span></div>
+      </div>
+    </div>
+    <div class="map-wrap">
+      <div class="map-card" aria-hidden="true">
+        <div class="map-bg"></div>
+        <div class="map-state"></div>
+        <div class="map-konaseema"></div>
+        <div class="map-pin p1"><span class="pin-pulse"></span></div>
+        <div class="map-pin p2"><span class="pin-pulse"></span></div>
+        <div class="map-pin p3"><span class="pin-pulse"></span></div>
+        <div class="map-pin p4"><span class="pin-pulse"></span></div>
+        <div class="map-pin p5 gold-pin"><span class="pin-pulse gold"></span><span class="pin-label">Konaseema</span>
+        </div>
+      </div>
+      <div class="contact-card">
+        <h4>📍 Find Us</h4>
+        <p>P.Gannavaram Center, Dr. B R Ambedkar Konaseema District, Andhra Pradesh – 533240</p>
+        <a href="tel:+919148025377" class="contact-link">📞 +91 91480 25377</a>
+        <a href="mailto:akshayapaatra@gmail.com" class="contact-link">✉️ akshayapaatra@gmail.com</a>
+        <a href="https://maps.google.com/?q=16.590066,81.888753" target="_blank" rel="noopener"
+          class="btn-gold small ripple-btn map-link"><span>Get Directions</span></a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="footer-logo-img"><img src="assets/akshayapaatra-logo.jpeg" alt="Logo" /></div>
+          <div>
+            <div class="footer-brand-name">AKSHAYA PAATRA</div>
+            <div class="footer-brand-sub">Konaseema Flavours</div>
+          </div>
+        </div>
+        <p class="footer-desc">Premium traditional Telugu sweets and snacks, handcrafted in the heart of Konaseema and
+          delivered with love across India.</p>
+        <div class="footer-socials">
+          <a href="mailto:akshayapaatra@gmail.com" class="social-btn" title="Email">✉</a>
+          <a href="tel:+919148025377" class="social-btn" title="Phone">📞</a>
+          <a href="https://maps.google.com/?q=16.590066,81.888753" target="_blank" rel="noopener" class="social-btn"
+            title="Location">📍</a>
+        </div>
+      </div>
+      <div class="footer-links-group">
+        <h5>Shop</h5>
+        <ul>
+          <li><a href="#shop">All Products</a></li>
+          <li><a href="#shop">Sweets</a></li>
+          <li><a href="#shop">Snacks</a></li>
+          <li><a href="#shop">Podi</a></li>
+        </ul>
+      </div>
+      <div class="footer-links-group">
+        <h5>Info</h5>
+        <ul>
+          <li><a href="#why">Our Story</a></li>
+          <li><a href="#testimonials">Testimonials</a></li>
+          <li><a href="#">Shipping Info</a></li>
+          <li><a href="#">Terms &amp; Conditions</a></li>
+        </ul>
+      </div>
+      <div class="footer-links-group">
+        <h5>Contact</h5>
+        <ul>
+          <li><a href="mailto:akshayapaatra@gmail.com">Email Us</a></li>
+          <li><a href="tel:+919148025377">+91 91480 25377</a></li>
+          <li><a href="https://maps.google.com/?q=16.590066,81.888753" target="_blank" rel="noopener">Gannavaram,
+              Konaseema</a></li>
+          <li><a href="admin.html">Admin Login</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Akshaya Paatra. All rights reserved. | Developed by <a href="mailto:ayyappaannamdevula@gmail.com"
+          style="color:var(--gold);text-decoration:none">Team Zarah</a></p>
+    </div>
+  </footer>
+
+  <!-- â•â•â• CART DRAWER â•â•â• -->
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
+    <div class="cart-drawer-head">
+      <div class="cart-head-left">
+        <h3>Shopping Cart</h3>
+        <span class="cart-item-count-label" id="cartItemCount">0 items</span>
+      </div>
+      <button class="cart-close" id="cartClose">✕</button>
+    </div>
+    <div class="cart-drawer-body" id="cartBody">
+      <div class="cart-empty" id="cartEmpty">
+        <div class="cart-empty-icon">🛒</div>
+        <h4>Your cart is empty</h4>
+        <p>Add some traditional delicacies to get started!</p>
+        <a href="#shop" class="btn-gold small ripple-btn" id="shopNowBtn"><span>Browse Products</span></a>
+      </div>
+      <div class="cart-items-list" id="cartItemsList"></div>
+    </div>
+    <div class="cart-drawer-foot" id="cartFoot" hidden>
+
+      <div class="cart-price-breakdown">
+        <div class="price-row"><span>Subtotal</span><span id="cartSubtotal">₹0</span></div>
+        <div class="price-row"><span>Shipping</span><span id="cartShipping" class="shipping-val">₹60</span></div>
+
+        <div class="price-row total-row"><span>Total</span><strong id="cartTotal">₹0</strong></div>
+      </div>
+      <p class="free-shipping-note" id="freeShipNote">Add <strong id="freeShipLeft">₹500</strong> more for FREE
+        shipping! 🚚</p>
+      <button class="btn-gold full ripple-btn" id="checkoutBtn"><span>Proceed to Checkout →</span></button>
+      <a href="#shop" class="continue-shopping-link" id="continueShopLink">â† Continue Shopping</a>
+    </div>
+  </aside>
+
+  <!-- â•â•â• NOTIFY MODAL â•â•â• -->
+  <div class="modal-overlay" id="notifyOverlay">
+    <div class="modal-box">
+      <button class="modal-close" id="notifyClose">✕</button>
+      <div class="modal-icon">🔔</div>
+      <h3>Notify When Available</h3>
+      <p id="notifyProductName"></p>
+      <form id="notifyForm">
+        <input type="email" id="notifyEmail" placeholder="Your email address" required />
+        <input type="tel" id="notifyPhone" placeholder="Mobile number (optional)" />
+        <button type="submit" class="btn-gold full ripple-btn"><span>Notify Me</span></button>
+      </form>
+    </div>
+  </div>
+
+  <!-- â•â•â• TOAST â•â•â• -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- â•â•â• PRODUCT CARD TEMPLATE â•â•â• -->
+  <template id="cardTpl">
+    <article class="product-card">
+      <div class="card-badge-wrap"><span class="card-badge"></span></div>
+      <div class="card-img-wrap">
+        <img class="card-img" alt="" loading="lazy" />
+        <div class="card-hover-overlay">
+          <p class="card-desc"></p>
+        </div>
+      </div>
+      <div class="card-body">
+        <h3 class="card-name"></h3>
+        <div class="card-weight-row">
+          <label>Weight</label>
+          <select class="card-weight-select"></select>
+        </div>
+        <p class="card-price-display"></p>
+        <div class="card-stock-row"><span class="stock-chip"></span></div>
+        <div class="card-actions"></div>
+      </div>
+    </article>
+  </template>
+
+
+  <!-- ═══ CHECKOUT MODAL ═══ -->
+  <div class="modal-overlay" id="checkoutOverlay">
+    <div class="modal-box checkout-modal-box">
+      <button class="modal-close" id="checkoutClose">✕</button>
+      <div class="checkout-steps">
+        <!-- Step 1: Shipping -->
+        <div class="checkout-step active" id="stepShipping">
+          <div class="modal-icon">📦</div>
+          <h3>Shipping Details</h3>
+          <form id="shippingForm" onsubmit="event.preventDefault(); placeOrder()">
+            <div class="checkout-form-grid">
+              <div class="cf-field full"><label>Full Name *</label><input type="text" id="shipName" required
+                  placeholder="Your full name" /></div>
+              <div class="cf-field"><label>Mobile Number *</label><input type="tel" id="shipPhone" required
+                  placeholder="10-digit mobile" pattern="[0-9]{10}" /></div>
+              <div class="cf-field"><label>Email (optional)</label><input type="email" id="shipEmail"
+                  placeholder="you@email.com" /></div>
+              <div class="cf-field full"><label>Address *</label><textarea id="shipAddress" required
+                  placeholder="House/flat, street, area" rows="2"></textarea></div>
+              <div class="cf-field"><label>City *</label><input type="text" id="shipCity" required placeholder="City" />
+              </div>
+              <div class="cf-field"><label>State *</label><input type="text" id="shipState" required
+                  placeholder="State" /></div>
+              <div class="cf-field"><label>Pincode *</label><input type="text" id="shipPin" required
+                  placeholder="6-digit pincode" pattern="[0-9]{6}" /></div>
+            </div>
+            <button type="submit" class="btn-gold full ripple-btn" style="margin-top:1.2rem"><span>Confirm Order
+                ✓</span></button>
+          </form>
+        </div>
+
+        <!-- Step 3: Success -->
+        <div class="checkout-step" id="stepSuccess">
+          <div class="success-anim">✅</div>
+          <h3>Order Placed!</h3>
+          <p id="successMsg">Thank you! Your order has been placed successfully.</p>
+          <div class="order-confirm-box" id="orderConfirmBox"></div>
+          <button class="btn-gold full ripple-btn" onclick="closeCheckout()" style="margin-top:1.5rem"><span>Continue
+              Shopping</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

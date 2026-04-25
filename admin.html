@@ -1,0 +1,1598 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Akshaya Paatra – Admin Portal</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:wght@400;600&family=Montserrat:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --g: #0f3826;
+      --gd: #081a10;
+      --gl: #1a5c3f;
+      --terra: #d15f30;
+      --gold: #c89a43;
+      --goldt: #e6b965;
+      --cream: #f6ebd7;
+      --r: .75rem;
+      --tr: .3s ease
+    }
+
+    body {
+      font-family: "Montserrat", sans-serif;
+      background: #f4f6f8;
+      color: #222;
+      min-height: 100vh
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      font-family: inherit
+    }
+
+    input,
+    select,
+    textarea {
+      font-family: inherit
+    }
+
+    /* LOGIN */
+    #loginScreen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, var(--gd) 0%, var(--g) 60%, #1a3d28 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem
+    }
+
+    .login-card {
+      background: #fff;
+      border-radius: 1.5rem;
+      padding: 3rem 2.5rem;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .25)
+    }
+
+    .login-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid var(--gold);
+      margin: 0 auto 1.2rem
+    }
+
+    .login-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .login-title {
+      font-family: "Cinzel", serif;
+      font-size: 1.5rem;
+      color: var(--g);
+      margin-bottom: .3rem
+    }
+
+    .login-sub {
+      font-size: .85rem;
+      color: #888;
+      margin-bottom: 2rem
+    }
+
+    .login-field {
+      text-align: left;
+      margin-bottom: 1.2rem
+    }
+
+    .login-field label {
+      display: block;
+      font-size: .8rem;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: .4rem;
+      text-transform: uppercase;
+      letter-spacing: .08em
+    }
+
+    .login-field input {
+      width: 100%;
+      padding: .85rem 1rem;
+      border: 1.5px solid #ddd;
+      border-radius: .6rem;
+      font-size: .95rem;
+      transition: var(--tr)
+    }
+
+    .login-field input:focus {
+      outline: none;
+      border-color: var(--gold)
+    }
+
+    .login-err {
+      background: #fff0f0;
+      color: #c62828;
+      padding: .7rem 1rem;
+      border-radius: .5rem;
+      font-size: .85rem;
+      margin-bottom: 1rem;
+      display: none
+    }
+
+    .login-err.show {
+      display: block
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: .95rem;
+      border-radius: 50px;
+      background: linear-gradient(135deg, var(--goldt), var(--gold));
+      color: #111;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      box-shadow: 0 8px 20px rgba(200, 154, 67, .3);
+      transition: var(--tr)
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(200, 154, 67, .4)
+    }
+
+    .login-back {
+      display: block;
+      margin-top: 1.2rem;
+      font-size: .85rem;
+      color: #888
+    }
+
+    .login-back a {
+      color: var(--g);
+      font-weight: 600
+    }
+
+    /* ADMIN LAYOUT */
+    #adminApp {
+      display: none;
+      min-height: 100vh
+    }
+
+    .admin-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      background: linear-gradient(180deg, #05140b 0%, #0f3826 100%);
+      color: var(--cream);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      border-right: 1px solid rgba(200, 154, 67, 0.1);
+      box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .sb-header {
+      padding: 1.8rem 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, .08)
+    }
+
+    .sb-logo {
+      display: flex;
+      align-items: center;
+      gap: .8rem
+    }
+
+    .sb-logo-img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid var(--gold)
+    }
+
+    .sb-logo-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .sb-logo-text {
+      font-family: "Cinzel", serif;
+      font-size: 1rem;
+      color: var(--gold);
+      line-height: 1.2
+    }
+
+    .sb-logo-text small {
+      display: block;
+      font-family: "Montserrat", sans-serif;
+      font-size: .7rem;
+      color: rgba(246, 235, 215, .5);
+      font-weight: 400;
+      margin-top: .15rem
+    }
+
+    .sb-nav {
+      flex: 1;
+      padding: 1.2rem 0
+    }
+
+    .sb-nav-item {
+      display: flex;
+      align-items: center;
+      gap: .9rem;
+      padding: .85rem 1.5rem;
+      cursor: pointer;
+      transition: var(--tr);
+      font-size: .9rem;
+      font-weight: 500;
+      border-left: 3px solid transparent
+    }
+
+    .sb-nav-item:hover {
+      background: rgba(255, 255, 255, .06);
+      color: var(--gold)
+    }
+
+    .sb-nav-item.active {
+      background: rgba(200, 154, 67, .12);
+      color: var(--gold);
+      border-left-color: var(--gold)
+    }
+
+    @media (max-width: 850px) {
+      .admin-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .mobile-nav {
+        display: flex !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #05140b;
+        z-index: 1000;
+        border-top: 1px solid var(--gold);
+        justify-content: space-around;
+        padding: .6rem 0;
+      }
+
+      .admin-main {
+        padding-bottom: 70px;
+      }
+    }
+
+    .mobile-nav {
+      display: none;
+    }
+
+    .sb-nav-icon {
+      font-size: 1.2rem;
+      width: 24px;
+      text-align: center
+    }
+
+    .sb-footer {
+      padding: 1.2rem 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, .08)
+    }
+
+    .sb-logout {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      font-size: .85rem;
+      color: rgba(246, 235, 215, .6);
+      cursor: pointer;
+      transition: var(--tr)
+    }
+
+    .sb-logout:hover {
+      color: var(--terra)
+    }
+
+    /* MAIN CONTENT */
+    .admin-main {
+      background: #f4f6f8;
+      overflow-y: auto
+    }
+
+    .admin-topbar {
+      background: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #eee;
+      position: sticky;
+      top: 0;
+      z-index: 10
+    }
+
+    .topbar-title {
+      font-family: "Cinzel", serif;
+      font-size: 1.2rem;
+      color: var(--g)
+    }
+
+    .topbar-user {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      font-size: .85rem;
+      color: #666
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #111;
+      font-family: "Cinzel", serif
+    }
+
+    .tab-panel {
+      display: none;
+      padding: 2rem
+    }
+
+    .tab-panel.active {
+      display: block
+    }
+
+    /* STAT CARDS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem
+    }
+
+    .stat-card {
+      background: #fff;
+      border-radius: var(--r);
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .06)
+    }
+
+    .stat-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: .6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      flex-shrink: 0
+    }
+
+    .stat-icon.green {
+      background: #e8f5e9
+    }
+
+    .stat-icon.orange {
+      background: #fff3e0
+    }
+
+    .stat-icon.gold {
+      background: #fffde7
+    }
+
+    .stat-icon.blue {
+      background: #e3f2fd
+    }
+
+    .stat-val {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: "Cinzel", serif;
+      color: var(--g);
+      line-height: 1
+    }
+
+    .stat-lbl {
+      font-size: .78rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin-top: .2rem
+    }
+
+    /* TABLES */
+    .section-card {
+      background: #fff;
+      border-radius: var(--r);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+      overflow: hidden;
+      margin-bottom: 1.5rem
+    }
+
+    .section-card-header {
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .section-card-header h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      color: #0f3826
+    }
+
+    .order-filter {
+      padding: .45rem 1.1rem;
+      border-radius: 50px;
+      font-size: .78rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: #f0f0f0;
+      color: #666;
+      transition: all .2s ease;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+
+    .order-filter:hover {
+      background: #e8e8e8;
+    }
+
+    .order-filter.active {
+      background: var(--gold);
+      color: #111;
+      border-color: #fff;
+      box-shadow: 0 2px 8px rgba(200, 154, 67, 0.3);
+    }
+
+    .btn-primary {
+      padding: .55rem 1.2rem;
+      border-radius: 50px;
+      background: var(--g);
+      color: #fff;
+      font-weight: 600;
+      font-size: .85rem;
+      transition: var(--tr)
+    }
+
+    .btn-primary:hover {
+      background: var(--gl)
+    }
+
+    .btn-danger {
+      padding: .4rem .9rem;
+      border-radius: 50px;
+      background: #ffebee;
+      color: #c62828;
+      font-weight: 600;
+      font-size: .78rem;
+      transition: var(--tr)
+    }
+
+    .btn-danger:hover {
+      background: #ffcdd2
+    }
+
+    .btn-edit {
+      padding: .4rem .9rem;
+      border-radius: 50px;
+      background: #e8f5e9;
+      color: #2e7d32;
+      font-weight: 600;
+      font-size: .78rem;
+      transition: var(--tr)
+    }
+
+    .btn-edit:hover {
+      background: #c8e6c9
+    }
+
+    .btn-sm {
+      padding: .35rem .8rem;
+      border-radius: .4rem;
+      font-size: .78rem;
+      font-weight: 600;
+      transition: var(--tr)
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    th {
+      padding: .9rem 1.2rem;
+      text-align: left;
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #888;
+      background: #fafafa;
+      border-bottom: 1px solid #f0f0f0
+    }
+
+    td {
+      padding: .9rem 1.2rem;
+      font-size: .88rem;
+      border-bottom: 1px solid #f8f8f8;
+      vertical-align: middle
+    }
+
+    tr:last-child td {
+      border-bottom: none
+    }
+
+    tr:hover td {
+      background: #fafafa
+    }
+
+    .product-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: .5rem;
+      object-fit: cover;
+      border: 1px solid #eee
+    }
+
+    .badge {
+      padding: .25rem .65rem;
+      border-radius: 50px;
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em
+    }
+
+    .badge-in {
+      background: #e8f5e9;
+      color: #2e7d32
+    }
+
+    .badge-low {
+      background: #fff8e1;
+      color: #f57f17
+    }
+
+    .badge-out {
+      background: #ffebee;
+      color: #c62828
+    }
+
+    .badge-pending {
+      background: #fff3e0;
+      color: #e65100
+    }
+
+    .badge-shipped {
+      background: #e3f2fd;
+      color: #1565c0
+    }
+
+    .badge-delivered {
+      background: #e8f5e9;
+      color: #2e7d32
+    }
+
+    /* MODAL */
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .5);
+      backdrop-filter: blur(4px);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--tr)
+    }
+
+    .modal-bg.open {
+      opacity: 1;
+      pointer-events: all
+    }
+
+    .modal-content {
+      background: #fff;
+      border-radius: 1rem;
+      padding: 2rem;
+      width: 100%;
+      max-width: 540px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: translateY(20px);
+      transition: transform .3s ease
+    }
+
+    .modal-bg.open .modal-content {
+      transform: translateY(0)
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem
+    }
+
+    .modal-header h3 {
+      font-family: "Cinzel", serif;
+      color: var(--g)
+    }
+
+    .modal-close-btn {
+      font-size: 1.3rem;
+      color: #aaa;
+      background: none;
+      border: none;
+      cursor: pointer
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem
+    }
+
+    .form-grid.full {
+      grid-template-columns: 1fr
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: .4rem
+    }
+
+    .form-field label {
+      font-size: .78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #666
+    }
+
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+      padding: .75rem .9rem;
+      border: 1.5px solid #ddd;
+      border-radius: .5rem;
+      font-size: .9rem;
+      transition: var(--tr)
+    }
+
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+      outline: none;
+      border-color: var(--gold)
+    }
+
+    .form-actions {
+      display: flex;
+      gap: .8rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem
+    }
+
+    .btn-cancel {
+      padding: .65rem 1.4rem;
+      border-radius: 50px;
+      background: #eee;
+      color: #555;
+      font-weight: 600;
+      font-size: .88rem
+    }
+
+    .btn-save {
+      padding: .65rem 1.6rem;
+      border-radius: 50px;
+      background: var(--g);
+      color: #fff;
+      font-weight: 700;
+      font-size: .88rem
+    }
+
+    .btn-save:hover {
+      background: var(--gl)
+    }
+
+    .status-select {
+      padding: .35rem .6rem;
+      border-radius: .4rem;
+      border: 1px solid #ddd;
+      font-size: .82rem;
+      background: #fff;
+      cursor: pointer
+    }
+
+    @media(max-width:768px) {
+      .admin-layout {
+        grid-template-columns: 1fr
+      }
+
+      .sidebar {
+        display: none
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- LOGIN -->
+  <div id="loginScreen">
+    <div class="login-card">
+      <div class="login-logo"><img src="assets/akshayapaatra-logo.jpeg" alt="Logo" /></div>
+      <h2 class="login-title">Admin Portal</h2>
+      <p class="login-sub">Akshaya Paatra · Owner Dashboard</p>
+      <div class="login-err" id="loginErr">Invalid username or password.</div>
+      <div class="login-field"><label>Username</label><input type="text" id="uname" placeholder="Enter username"
+          autocomplete="username" /></div>
+      <div class="login-field"><label>Password</label><input type="password" id="upass" placeholder="Enter password"
+          autocomplete="current-password" /></div>
+      <button class="btn-login" onclick="doLogin()">Login to Dashboard</button>
+      <span class="login-back"><a href="index.html">← Back to Store</a></span>
+    </div>
+  </div>
+  <!-- ADMIN APP -->
+  <div id="adminApp">
+    <div class="admin-layout">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sb-header">
+          <div class="sb-logo">
+            <div class="sb-logo-img"><img src="assets/akshayapaatra-logo.jpeg" alt="Logo" /></div>
+            <div class="sb-logo-text">AKSHAYA PAATRA<small>Admin Dashboard</small></div>
+          </div>
+        </div>
+        <nav class="sb-nav">
+          <div class="sb-nav-item active" onclick="switchTab('dashboard', this)"><span class="sb-nav-icon">🏠</span>
+            Dashboard</div>
+          <div class="sb-nav-item" onclick="switchTab('analytics', this)"><span class="sb-nav-icon">📈</span> Analytics
+          </div>
+          <div class="sb-nav-item" onclick="switchTab('products', this)"><span class="sb-nav-icon">🛍️</span> Inventory
+          </div>
+          <div class="sb-nav-item" onclick="switchTab('orders', this)"><span class="sb-nav-icon">📦</span> Orders</div>
+          <div class="sb-nav-item" onclick="switchTab('banners', this)"><span class="sb-nav-icon">🎨</span> Banners
+          </div>
+          <div class="sb-nav-item" onclick="switchTab('settings', this)"><span class="sb-nav-icon">⚙️</span> Settings
+          </div>
+        </nav>
+        <div class="sb-footer">
+          <div class="sb-logout" onclick="doLogout()"><span>🚪</span> Logout</div>
+        </div>
+      </aside>
+      <div class="mobile-nav">
+        <div onclick="switchTab('dashboard', this)">🏠</div>
+        <div onclick="switchTab('analytics', this)">📈</div>
+        <div onclick="switchTab('products', this)">🛍️</div>
+        <div onclick="switchTab('orders', this)">📦</div>
+        <div onclick="switchTab('settings', this)">⚙️</div>
+      </div>
+      <!-- MAIN -->
+      <main class="admin-main">
+        <div class="admin-topbar">
+          <span class="topbar-title" id="topbarTitle">Dashboard</span>
+          <div class="topbar-user">
+            <div class="user-avatar">A</div><span>Appuuu</span>
+          </div>
+        </div>
+        <!-- DASHBOARD TAB -->
+        <div class="tab-panel active" id="tab-dashboard">
+          <div class="stats-grid" id="statsGrid"></div>
+          <div class="section-card">
+            <div class="section-card-header">
+              <h3>Recent Orders</h3>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Date</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="dashOrdersBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <!-- PRODUCTS TAB -->
+        <div class="tab-panel" id="tab-products">
+          <div class="section-card">
+            <div class="section-card-header" style="display:flex;flex-wrap:wrap;gap:1rem">
+              <h3 style="flex:1">Inventory</h3>
+              <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+                <button class="btn-edit" style="font-size:.7rem" onclick="bulkAdjustPrices()">Bulk ± Price</button>
+                <button class="btn-edit" style="font-size:.7rem" onclick="bulkStockToggle()">Bulk Stock</button>
+                <input type="text" id="pSearch" placeholder="Search..." oninput="renderProductsTable()"
+                  style="padding:.4rem .8rem;border-radius:50px;border:1px solid #ddd;font-size:.8rem;width:120px" />
+                <button class="btn-primary" style="font-size:.75rem" onclick="openProductModal()">+ Add</button>
+              </div>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Base Price</th>
+                  <th>Stock</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="productsBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ORDERS TAB -->
+        <div class="tab-panel" id="tab-orders">
+          <div class="section-card">
+            <div class="section-card-header" style="display:flex;flex-wrap:wrap;gap:1rem">
+              <h3 style="flex:1">Order Management</h3>
+              <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+                <button class="btn-danger" style="font-size:.7rem" onclick="bulkDeleteOrders()">Cleanup
+                  (Delivered/Cancelled)</button>
+                <button class="btn-primary" style="font-size:.75rem" onclick="renderOrders()">↻ Refresh</button>
+              </div>
+            </div>
+            <div
+              style="padding:.8rem 1.5rem;display:flex;gap:.8rem;overflow-x:auto;background:#fafafa;border-bottom:1px solid #eee">
+              <div class="order-filter active" onclick="filterOrders('all', this)">All</div>
+              <div class="order-filter" onclick="filterOrders('pending', this)">Pending</div>
+              <div class="order-filter" onclick="filterOrders('shipped', this)">Shipped</div>
+              <div class="order-filter" onclick="filterOrders('delivered', this)">Delivered</div>
+              <div class="order-filter" onclick="filterOrders('cancelled', this)">Cancelled</div>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Date</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="ordersBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- BANNERS TAB -->
+        <div class="tab-panel" id="tab-banners">
+          <div class="section-card">
+            <div class="section-card-header">
+              <h3>Banner Management</h3>
+              <button onclick="resetBannersToDefaults()" class="btn-danger" style="font-size:.7rem">Reset to
+                Defaults</button>
+            </div>
+            <div style="padding:1.5rem">
+              <p style="color:#888;font-size:.9rem;margin-bottom:1.2rem">Toggle banners ON/OFF or edit their content.
+                Active banners appear instantly on the store homepage.</p>
+              <div id="bannerList" style="display:flex;flex-direction:column;gap:1.2rem"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ANALYTICS TAB -->
+        <div class="tab-panel" id="tab-analytics">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem">
+            <div class="section-card">
+              <div class="section-card-header">
+                <h3>Sales Overview</h3>
+              </div>
+              <div style="padding:1.5rem">
+                <div id="revenueChart"
+                  style="height:180px;display:flex;align-items:flex-end;gap:8px;padding-bottom:10px;border-bottom:2px solid #eee">
+                </div>
+                <p style="font-size:.7rem;color:#888;margin-top:.8rem;text-align:center">Revenue by Day (Last 7 Days)
+                </p>
+              </div>
+            </div>
+            <div class="section-card">
+              <div class="section-card-header">
+                <h3>Hall of Fame (Bestsellers)</h3>
+              </div>
+              <div style="padding:1rem" id="topProductsList"></div>
+            </div>
+            <div class="section-card">
+              <div class="section-card-header">
+                <h3>Top Ordering Regions</h3>
+              </div>
+              <div style="padding:1rem" id="regionInsights"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SETTINGS TAB -->
+        <div class="tab-panel" id="tab-settings">
+          <div class="section-card" style="max-width:650px">
+            <div class="section-card-header">
+              <h3>Live Site Settings</h3>
+            </div>
+            <form id="settingsForm" onsubmit="saveSettings(event)" style="padding:1.5rem">
+              <div class="form-grid">
+                <div class="form-field"><label>Business Phone</label><input type="text" id="setPhone" /></div>
+                <div class="form-field"><label>Business Email</label><input type="email" id="setEmail" /></div>
+                <div class="form-field"><label>Free Delivery Above (₹)</label><input type="number" id="setFreeShip" />
+                </div>
+                <div class="form-field"><label>Standard Delivery Fee (₹)</label><input type="number" id="setShipFee" />
+                </div>
+                <div class="form-field" style="grid-column:1/-1"><label>Notice Board (Marquee Text)</label><textarea
+                    id="setMarquee" rows="2"></textarea></div>
+              </div>
+              <button type="submit" class="btn-save" style="margin-top:1.5rem;width:100%;padding:1rem">Save & Update
+                Website</button>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <!-- PRODUCT MODAL -->
+  <div class="modal-bg" id="productModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add Product</h3><button class="modal-close-btn" onclick="closeProductModal()">✕</button>
+      </div>
+      <form id="productForm" onsubmit="saveProduct(event)">
+        <div class="form-grid">
+          <div class="form-field"><label>Product Name</label><input type="text" id="pName" required
+              placeholder="e.g. Bellam Gavvalu" /></div>
+          <div class="form-field"><label>Category</label><select id="pCat" required>
+              <option value="">Select</option>
+              <option value="sweets">Sweets</option>
+              <option value="snacks">Snacks</option>
+              <option value="podi">Podi</option>
+              <option value="others">Others</option>
+            </select></div>
+          <div class="form-field"><label>Base Price (₹)</label><input type="number" id="pPrice" required
+              placeholder="550" /></div>
+          <div class="form-field"><label>Stock Status</label><select id="pStock">
+              <option value="in">In Stock</option>
+              <option value="low">Low Stock</option>
+              <option value="out">Out of Stock</option>
+            </select></div>
+          <div class="form-field"><label>Badge Text</label><input type="text" id="pBadge" placeholder="IN STOCK" />
+          </div>
+          <div class="form-field" style="grid-column:1/-1"><label>Product Images (URLs — up to 5, one per
+              line)</label><textarea id="pImages" rows="4"
+              placeholder="https://drive.google.com/... or https://i.imgur.com/...&#10;Paste Google Drive share link, Imgur, or any direct image URL.&#10;First image is the main display image."></textarea>
+          </div>
+          <div class="form-field" style="grid-column:1/-1" id="imgPreviewWrap"><label>Image Preview</label>
+            <div id="imgPreview"
+              style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.3rem;min-height:60px;background:#f9f9f9;border:1px dashed #ddd;border-radius:.5rem;padding:.5rem;align-items:center">
+              <span style="color:#bbb;font-size:.82rem">Previews will appear as you type URLs</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-grid full" style="margin-top:1rem">
+          <div class="form-field"><label>Description</label><textarea id="pDesc" rows="3"
+              placeholder="Product description..."></textarea></div>
+          <div class="form-field"><label>Weight Options (comma-separated)</label><input type="text" id="pWeights"
+              placeholder="250g, 500g, 1kg" /></div>
+        </div>
+        <input type="hidden" id="pId" />
+        <div class="form-actions"><button type="button" class="btn-cancel"
+            onclick="closeProductModal()">Cancel</button><button type="submit" class="btn-save">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- BANNER MODAL -->
+  <div class="modal-bg" id="bannerModal">
+    <div class="modal-content" style="max-width:500px">
+      <div class="modal-header">
+        <h3>Edit Banner</h3><button class="modal-close-btn" onclick="closeBannerModal()">✕</button>
+      </div>
+      <form id="bannerForm" onsubmit="saveBanner(event)">
+        <div class="form-grid full">
+          <div class="form-field"><label>Banner Title</label><input type="text" id="bTitle" required /></div>
+          <div class="form-field"><label>Tagline (Sub-heading)</label><input type="text" id="bTag" required /></div>
+          <div class="form-field"><label>Description</label><textarea id="bDesc" rows="2"></textarea></div>
+        </div>
+        <div class="form-grid" style="margin-top:1rem">
+          <div class="form-field"><label>Discount (%)</label><input type="text" id="bDisc" placeholder="e.g. 10% OFF" />
+          </div>
+          <div class="form-field"><label>Theme Color</label><input type="color" id="bColor" /></div>
+          <div class="form-field"><label>Item Category (for Random Image)</label>
+            <select id="bCat">
+              <option value="sweets">Sweets</option>
+              <option value="snacks">Snacks (Hots)</option>
+              <option value="podi">Podi</option>
+            </select>
+          </div>
+        </div>
+        <input type="hidden" id="bId" />
+        <div class="form-actions" style="margin-top:1.5rem">
+          <button type="button" class="btn-cancel" onclick="closeBannerModal()">Cancel</button>
+          <button type="submit" class="btn-save">Update Banner</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const ADMIN_USER = 'Appuuu', ADMIN_PASS = 'Appuuu@369';
+    const fmt = p => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(p);
+
+    const DEFAULT_PRODUCTS = [
+      { id: 1, name: "Bellam Gavvalu", category: "sweets", priceBase: 550, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-saveurssecretes-5992272.jpg", desc: "Golden jaggery shells with cardamom.", weights: ["250g", "500g", "1kg"] },
+      { id: 2, name: "Bandar Laddu / Tokkudu Laddu", category: "sweets", priceBase: 650, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-debasish-5350676.jpg", desc: "Ghee-rich coastal Andhra laddus.", weights: ["250g", "500g", "1kg"] },
+      { id: 3, name: "Ariselu / Pakundalu", category: "sweets", priceBase: 730, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-gaurav-kumar-1281378-18488303.jpg", desc: "Rice flour & jaggery festive sweet.", weights: ["250g", "500g", "1kg"] },
+      { id: 4, name: "Boondi Laddu", category: "sweets", priceBase: 480, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-saveurssecretes-5410407.jpg", desc: "Gram flour pearls in sugar syrup laddus.", weights: ["250g", "500g", "1kg"] },
+      { id: 5, name: "Dry Fruit Laddu", category: "sweets", priceBase: 980, stock: "in", badge: "PREMIUM", image: "assets/items/pexels-masuma-rahaman-437541976-34153202.jpg", desc: "Cashews, almonds, raisins and pistachios.", weights: ["250g", "500g", "1kg"] },
+      { id: 6, name: "Ragi Laddu", category: "sweets", priceBase: 420, stock: "in", badge: "HEALTHY", image: "assets/items/pexels-saveurssecretes-9832636.jpg", desc: "Finger millet laddus with jaggery.", weights: ["250g", "500g"] },
+      { id: 7, name: "Sunnundalu", category: "sweets", priceBase: 520, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-saveurssecretes-9832685.jpg", desc: "Sesame and urad dal laddus.", weights: ["250g", "500g", "1kg"] },
+      { id: 8, name: "Ravva Laddu", category: "sweets", priceBase: 460, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-gaurav-kumar-1281378-18488314.jpg", desc: "Semolina laddus with ghee and cashews.", weights: ["250g", "500g", "1kg"] },
+      { id: 9, name: "Poha Laddu", category: "sweets", priceBase: 400, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-dropshado-19151511.jpg", desc: "Flattened rice laddus with coconut.", weights: ["250g", "500g"] },
+      { id: 10, name: "Kova Kajjikayalu", category: "sweets", priceBase: 680, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-masuma-rahaman-437541976-34153206.jpg", desc: "Fried pastries with milk and dry fruits.", weights: ["250g", "500g", "1kg"] },
+      { id: 11, name: "Mysore Pak", category: "sweets", priceBase: 580, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-saveurssecretes-5410409.jpg", desc: "Rich ghee fudge with golden crust.", weights: ["250g", "500g"] },
+      { id: 12, name: "Kala Jamun", category: "sweets", priceBase: 520, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-saveurssecretes-13220364.jpg", desc: "Deep-fried khoya dumplings in syrup.", weights: ["Pack of 10", "Pack of 20"] },
+      { id: 13, name: "Bellam Nuvvula Undalu", category: "sweets", priceBase: 440, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-zayed-hossain-52728970-36021117.jpg", desc: "Sesame and jaggery balls.", weights: ["250g", "500g"] },
+      { id: 14, name: "Boondi Achu", category: "sweets", priceBase: 380, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-thrissurkaranphotography-12865862.jpg", desc: "Golden gram flour drops in moulds.", weights: ["250g", "500g"] },
+      { id: 15, name: "Sweet Kommulu", category: "sweets", priceBase: 420, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-thrissurkaranphotography-12865863.jpg", desc: "Cone-shaped sweets with sweet filling.", weights: ["250g", "500g"] },
+      { id: 16, name: "Bellam / Sugar Kommulu", category: "sweets", priceBase: 400, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-vipinvihari-murari-das-2150327057-36460898.jpg", desc: "Jaggery and sugar Kommulu varieties.", weights: ["250g", "500g"] },
+      { id: 17, name: "Sapota Sweet", category: "sweets", priceBase: 460, stock: "low", badge: "SEASONAL", image: "assets/items/pexels-saveurssecretes-5992272.jpg", desc: "Sapota fruit based natural sweet.", weights: ["250g", "500g"] },
+      { id: 18, name: "Tomato Sweet", category: "sweets", priceBase: 380, stock: "in", badge: "UNIQUE", image: "assets/items/pexels-debasish-5350676.jpg", desc: "Tangy-sweet jam from fresh tomatoes.", weights: ["250g", "500g"] },
+      { id: 19, name: "Palli Patti / Palli Undalu", category: "sweets", priceBase: 420, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-saveurssecretes-5410407.jpg", desc: "Groundnut brittle and peanut laddus.", weights: ["250g", "500g"] },
+      { id: 20, name: "Kobbari Laddu", category: "sweets", priceBase: 480, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-masuma-rahaman-437541976-34153202.jpg", desc: "Fresh coconut laddus with jaggery.", weights: ["250g", "500g", "1kg"] },
+      { id: 21, name: "Kobbari Acchu", category: "sweets", priceBase: 460, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-gaurav-kumar-1281378-18488303.jpg", desc: "Moulded coconut sweets.", weights: ["250g", "500g"] },
+      { id: 22, name: "Kobbari Burelu", category: "sweets", priceBase: 520, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-saveurssecretes-9832636.jpg", desc: "Fried coconut and jaggery dumplings.", weights: ["250g", "500g"] },
+      { id: 23, name: "Kobbari Lowju", category: "sweets", priceBase: 550, stock: "low", badge: "LIMITED", image: "assets/items/pexels-saveurssecretes-9832685.jpg", desc: "Slow-cooked coconut halwa.", weights: ["250g", "500g"] },
+      { id: 24, name: "Nuvvula Undalu", category: "sweets", priceBase: 430, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-saveurssecretes-5410409.jpg", desc: "Sesame seed balls with jaggery.", weights: ["250g", "500g"] },
+      { id: 25, name: "Nuvvula Chikki", category: "sweets", priceBase: 360, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-saveurssecretes-13220364.jpg", desc: "Crispy sesame brittle with jaggery.", weights: ["250g", "500g"] },
+      { id: 26, name: "Bellam Pootha Rekulu", category: "sweets", priceBase: 850, stock: "in", badge: "SPECIALTY", image: "assets/items/pexels-masuma-rahaman-437541976-34153206.jpg", desc: "Paper-thin rice starch with jaggery.", weights: ["Box of 10", "Box of 20"] },
+      { id: 27, name: "Dry Fruits Pootha Rekulu", category: "sweets", priceBase: 1200, stock: "in", badge: "PREMIUM", image: "assets/items/pexels-dropshado-19151511.jpg", desc: "Premium pootharekulu with dry fruits.", weights: ["Box of 10", "Box of 20"] },
+      { id: 28, name: "Chegodilu", category: "snacks", priceBase: 420, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-thrissurkaranphotography-12865863.jpg", desc: "Crunchy golden rings.", weights: ["250g", "500g"] },
+      { id: 29, name: "Murukulu", category: "snacks", priceBase: 390, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-chinarianphotographer-9198596.jpg", desc: "Crispy rice flour spirals.", weights: ["250g", "500g"] },
+      { id: 30, name: "Kara Boondi", category: "snacks", priceBase: 360, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-vipinvihari-murari-das-2150327057-36460898.jpg", desc: "Spicy gram flour pearls.", weights: ["250g", "500g"] },
+      { id: 31, name: "Aloo Sev", category: "snacks", priceBase: 340, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-gaurav-kumar-1281378-18488314.jpg", desc: "Thin crispy potato-based sev.", weights: ["250g", "500g"] },
+      { id: 32, name: "Bhujia", category: "snacks", priceBase: 350, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-zayed-hossain-52728970-36021117.jpg", desc: "Crunchy moth bean flour sev.", weights: ["250g", "500g"] },
+      { id: 33, name: "Agra Mixture", category: "snacks", priceBase: 380, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-saveurssecretes-5992272.jpg", desc: "Sev, boondi, peanuts and lentils.", weights: ["250g", "500g"] },
+      { id: 34, name: "Pappu Chegodilu", category: "snacks", priceBase: 440, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-debasish-5350676.jpg", desc: "Lentil-enriched chegodilu.", weights: ["250g", "500g"] },
+      { id: 35, name: "Pappu Chekkalu", category: "snacks", priceBase: 460, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-saveurssecretes-5410407.jpg", desc: "Rice crackers with dal filling.", weights: ["250g", "500g"] },
+      { id: 36, name: "Rose Flowers", category: "snacks", priceBase: 480, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-masuma-rahaman-437541976-34153202.jpg", desc: "Shaped rice flour flowers, deep-fried.", weights: ["250g", "500g"] },
+      { id: 37, name: "Panasa Thonalu", category: "snacks", priceBase: 420, stock: "low", badge: "SEASONAL", image: "assets/items/pexels-saveurssecretes-9832636.jpg", desc: "Jackfruit-shaped rice flour snacks.", weights: ["250g", "500g"] },
+      { id: 38, name: "Jantikalu", category: "snacks", priceBase: 400, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-saveurssecretes-9832685.jpg", desc: "Murukku-style pressed snacks.", weights: ["250g", "500g"] },
+      { id: 39, name: "Sakinalu", category: "snacks", priceBase: 520, stock: "in", badge: "FESTIVE", image: "assets/items/pexels-gaurav-kumar-1281378-18488303.jpg", desc: "Festive sesame-rice crackers.", weights: ["250g", "500g"] },
+      { id: 40, name: "Appalu", category: "snacks", priceBase: 380, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-thrissurkaranphotography-12865862.jpg", desc: "Sweet-salty rice flour discs.", weights: ["250g", "500g"] },
+      { id: 41, name: "Chekkalu", category: "snacks", priceBase: 440, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-saveurssecretes-13220364.jpg", desc: "Crispy rice crackers with cumin.", weights: ["250g", "500g"] },
+      { id: 42, name: "Sanna Karapposa", category: "snacks", priceBase: 360, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-saveurssecretes-5410409.jpg", desc: "Small gram flour sev.", weights: ["250g", "500g"] },
+      { id: 43, name: "Ribbon Pakoda", category: "snacks", priceBase: 400, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-zayed-hossain-52728970-36021117.jpg", desc: "Flat ribbon rice flour snack.", weights: ["250g", "500g"] },
+      { id: 44, name: "Karivepaku Karam Podi", category: "podi", priceBase: 320, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-chinarianphotographer-9198596.jpg", desc: "Curry leaf spice powder.", weights: ["100g", "250g", "500g"] },
+      { id: 45, name: "Nuvvula Karam Podi", category: "podi", priceBase: 340, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-saveurssecretes-5992272.jpg", desc: "Sesame spice powder.", weights: ["100g", "250g", "500g"] },
+      { id: 46, name: "Dhaniya Karam Podi", category: "podi", priceBase: 300, stock: "in", badge: "IN STOCK", image: "assets/items/pexels-debasish-5350676.jpg", desc: "Coriander seed podi.", weights: ["100g", "250g", "500g"] },
+      { id: 47, name: "Munagaaku Karam Podi", category: "podi", priceBase: 380, stock: "low", badge: "HEALTH+", image: "assets/items/pexels-saveurssecretes-5410407.jpg", desc: "Moringa leaf iron-rich podi.", weights: ["100g", "250g", "500g"] },
+      { id: 48, name: "Flax Seeds Karam Podi", category: "podi", priceBase: 360, stock: "in", badge: "HEALTHY", image: "assets/items/pexels-saveurssecretes-9832636.jpg", desc: "Omega-3 flax seed podi.", weights: ["100g", "250g", "500g"] },
+      { id: 49, name: "Pasupu (Turmeric)", category: "others", priceBase: 180, stock: "in", badge: "ORGANIC", image: "assets/items/pexels-saveurssecretes-9832685.jpg", desc: "Pure organic turmeric powder.", weights: ["100g", "250g", "500g"] },
+      { id: 50, name: "Kumkum", category: "others", priceBase: 120, stock: "in", badge: "PURE", image: "assets/items/pexels-saveurssecretes-5410409.jpg", desc: "Traditional pure kumkum.", weights: ["50g", "100g", "250g"] }
+    ];
+
+    const BANNERS_DEFAULT = [
+      { id: 1, title: 'Freshly Prepared Arriselu', tag: 'Sankranti Special', desc: 'Traditional jaggery discs.', festival: 'Sankranti', color: '#0f3826', active: true, discount: '20%', cat: 'sweets' },
+      { id: 2, title: 'Bandar Laddu', tag: 'All-Time Favourite', desc: 'Dense, ghee-rich Andhra coastal laddus.', festival: 'Diwali', color: '#4a148c', active: true, discount: '15%', cat: 'sweets' },
+      { id: 3, title: 'Bellam Pootha Rekulu', tag: 'Konaseema Specialty', desc: 'Paper-thin rice starch with jaggery.', festival: 'Ugadi', color: '#5d4037', active: true, discount: '10%', cat: 'sweets' },
+      { id: 4, title: 'Sunday Special: 10% OFF', tag: 'Limited Time', desc: 'Enjoy 10% discount on all orders today!', festival: 'Sunday Special', color: '#f9a825', active: true, discount: '10%', cat: 'sweets' },
+      { id: 5, title: '10% OFF on All Sweets', tag: 'Sweet Deal', desc: 'Get a flat 10% discount on entire collection.', festival: 'Sweets Offer', color: '#4e342e', active: true, discount: '10%', cat: 'sweets' },
+      { id: 6, title: 'Flash Sale: 50% OFF', tag: 'Hurry Up!', desc: 'Selected snacks at half price.', festival: 'Flash Sale', color: '#d32f2f', active: true, discount: '50%', cat: 'snacks' },
+      { id: 7, title: 'Traditional Podi Fest', tag: 'Spicy Deals', desc: 'Buy any 2 Podis and get extra off.', festival: 'Podi Sale', color: '#2e7d32', active: true, discount: '15%', cat: 'podi' }
+    ];
+    const getAdminProducts = () => JSON.parse(localStorage.getItem('adminProducts') || '[]');
+    const setAdminProducts = d => localStorage.setItem('adminProducts', JSON.stringify(d));
+    const getOrders = () => JSON.parse(localStorage.getItem('adminOrders') || '[]');
+    const setOrders = d => localStorage.setItem('adminOrders', JSON.stringify(d));
+    const getBanners = () => { const saved = localStorage.getItem('adminBanners'); return saved ? JSON.parse(saved) : [...BANNERS_DEFAULT]; };
+    const setBanners = d => localStorage.setItem('adminBanners', JSON.stringify(d));
+    const getAllProducts = () => {
+      const overrides = getAdminProducts();
+      const merged = [...DEFAULT_PRODUCTS];
+      overrides.forEach(ap => { const i = merged.findIndex(p => p.id === ap.id); i >= 0 ? merged[i] = ap : merged.push(ap); });
+      return merged.filter(p => !p.deleted);
+    };
+
+    // AUTH
+    function doLogin() {
+      const u = document.getElementById('uname').value.trim();
+      const p = document.getElementById('upass').value;
+      const err = document.getElementById('loginErr');
+      if (u === ADMIN_USER && p === ADMIN_PASS) {
+        sessionStorage.setItem('adminAuth', '1');
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminApp').style.display = 'block';
+        initAdmin();
+      } else { err.classList.add('show'); document.getElementById('upass').value = ''; }
+    }
+    function doLogout() { sessionStorage.removeItem('adminAuth'); location.reload(); }
+    document.addEventListener('keydown', e => { if (e.key === 'Enter' && document.getElementById('loginScreen').style.display !== 'none') doLogin(); });
+
+    // TABS
+    function switchTab(tab, el) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.sb-nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      el.classList.add('active');
+      document.getElementById('topbarTitle').textContent = el.textContent.trim();
+      if (tab === 'products') renderProductsTable();
+      if (tab === 'orders') renderOrders();
+      if (tab === 'banners') renderBanners();
+      if (tab === 'dashboard') renderDashboard();
+    }
+
+    // DASHBOARD
+    function renderDashboard() {
+      const orders = getOrders();
+      const products = getAllProducts();
+      const revenue = orders.filter(o => o.status !== 'cancelled').reduce((s, o) => s + (o.total || 0), 0);
+      const catCount = { sweets: 0, snacks: 0, podi: 0 };
+      products.forEach(p => { if  (catCount[p.category] !== undefined) catCount[p.category]++; });  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card"><div class="stat-icon green">📦</div><div><div class="stat-val">${orders.length}</div><div class="stat-lbl">Total Orders</div></div></div>
+    <div class="stat-card"><div class="stat-icon gold">💰</div><div><div class="stat-val">${fmt(revenue)}</div><div class="stat-lbl">Revenue</div></div></div>
+    <div class="stat-card"><div class="stat-icon orange">🛍️</div><div><div class="stat-val">${products.length}</div><div class="stat-lbl">Products</div></div></div>
+    <div class="stat-card"><div class="stat-icon blue">📈</div><div><div class="stat-val">${orders.length ? (revenue / or d ers.length).toFixed(0) : 0}</div><div class="stat-lbl">Avg Order</div></div></div>`;
+
+  cument.getElementById('dashOrdersBody').innerHTML = orders.slice(0, 5).map(o => `
+    <tr style="cursor:pointer" onclick="viewOrder(${o.id})">
+      <td>#${String(o.id).slice(-6)}</td>
+      <td>${o.date || '—'}</td>
+      <td>${(o.items || []).length} items</td>
+      <td>${fmt(o.total || 0)}</td>
+      <td><span class="badge badge-${o.status || 'pending'}">${(o.status || 'pending').toUpperCase()}</span></td>
+    </tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:#aaa;padding:2rem">No orders yet.</td></tr>';
+    }
+
+    // ANALYTICS
+    function renderAnalytics() {
+      const orders = getOrders();
+      const products = getAllProducts();
+
+      //ue Chart (Last 7 Days Mockup logic)
+      const days = ['Mon', 'Tue', 'Wed',  'Thu',  'Fri' , 'Sat ', 'Su n'];
+       const revData = [4500, 7200, 3100, 8900, 12000, 15000, 9800]; // Mockup for visual
+      const max = Math.max(...revData);
+      document.getElementById('revenueChart').innerHTML = revData.map((v, i) => `
+        <div style="flex:1;background:var(--gold);height:${(v / max) *   100} % ;border-radius:4px 4px 0 0;position:relative" title="${days[i]}: ${fmt(v)}">
+          <span style="position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:.6rem;color:#888">${days[i]}</span>
+        </div>`).join('');
+
+      // Top Products
+      const topList = products.slice(0, 5).map(p => `
+        <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem;background:#f9f9f9;padding:.6rem;border-radius:8px">
+          <img src="${p.image}" style="width:40px;height:40px;border-radius:6px;object-fit:cover" />
+          <div style="flex:1"><div style="font-size:.85rem;font-weight:600">${p.name}</div><div style="font-size:.7rem;color:#888">${p.category}</div></div>
+          <div style="font-weight:700;color:var(--gold)">${Math.floor(Math.random() * 50 )  +  2 0} Sales</div>
+        </div>`).join('');
+      document.getElementById('topProductsList').innerHTML = topList || 'No sales yet.';
+
+      // Regions
+      const cities = { 'Hyderabad': 45, 'Kakinada': 32, 'Vijayawada': 28, 'Bengaluru': 25, 'Chennai': 12 };
+      document.getElementById('regionInsights').innerHTML = Object.entries(cities).map(([city, count]) => `
+        <div style="margin-bottom:.8rem">
+          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.2rem"><span>${city}</span><span>${count}%</span></div>
+          <div style="height:6px;background:#eee;border-radius:10px"><div style="width:${count}%;background:var(--g);height:100%;border-radius:10px"></div></div>
+        </div>`).join('');
+    }
+
+    // DASHBOARD
+    function renderDashboard() {
+      const orders = getOrders();
+      const products = getAllProducts();
+      const revenue = orders.filter(o => o.status !== 'cancelled').reduce((s, o) => s + (o.total || 0), 0);
+      const catCount = { sweets: 0, snacks: 0, podi: 0 };
+      products.forEach(p => { if  (catCount[p.category] !== undefined) catCount[p.category]++; });
+ document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card"><div class="stat-icon green">📦</div><div><div class="stat-val">${orders.length}</div><div class="stat-lbl">Total Orders</div></div></div>
+    <div class="stat-card"><div class="stat-icon gold">💰</div><div><div class="stat-val">${fmt(revenue)}</div><div class="stat-lbl">Revenue</div></div></div>
+    <div class="stat-card"><div class="stat-icon orange">🛍️</div><div><div class="stat-val">${products.length}</div><div class="stat-lbl">Products</div></div></div>
+    <div class="stat-card"><div class="stat-icon blue">📈</div><div><div class="stat-val">${orders.length ? (revenue / ord e rs.length).toFixed(0) : 0}</div><div class="stat-lbl">Avg Order</div></div></div>`;
+
+   ument.getElementById('dashOrdersBody').innerHTML = orders.slice(0, 5).map(o => `
+    <tr style="cursor:pointer" onclick="viewOrder(${o.id})">
+      <td>#${String(o.id).slice(-6)}</td>
+      <td>${o.date || '—'}</td>
+      <td>${(o.items || []).length} items</td>
+      <td>${fmt(o.total || 0)}</td>
+      <td><span class="badge badge-${o.status || 'pending'}">${(o.status || 'pending').toUpperCase()}</span></td>
+    </tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:#aaa;padding:2rem">No orders yet.</td></tr>';
+    }
+
+    // ANALYTICS
+    function renderAnalytics() {
+      const orders = getOrders();
+      const products = getAllProducts();
+
+      // e Chart Mockup
+      const days = ['Mon', 'Tue', 'Wed', ' Thu',  'Fri',  'Sat' , 'Sun '];
+       const revData = [4500, 7200, 3100, 8900, 12000, 15000, 9800];
+      const max = Math.max(...revData);
+      document.getElementById('revenueChart').innerHTML = revData.map((v, i) => `
+        <div style="flex:1;background:var(--gold);height:${(v / max) *  1 00}% ; border-radius:4px 4px 0 0;position:relative" title="${days[i]}: ${fmt(v)}">
+          <span style="position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:.6rem;color:#888">${days[i]}</span>
+        </div>`).join('');
+
+      // Top Products
+      document.getElementById('topProductsList').innerHTML = products.slice(0, 4).map(p => `
+        <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem;background:#f9f9f9;padding:.6rem;border-radius:8px">
+          <img src="${p.image}" style="width:40px;height:40px;border-radius:6px;object-fit:cover" />
+          <div style="flex:1"><div style="font-size:.85rem;font-weight:600">${p.name}</div><div style="font-size:.7rem;color:#888">${p.category}</div></div>
+          <div style="font-weight:700;color:var(--gold)">${Math.floor(Math.random() * 50)   + 2 0 } Sales</div>
+        </div>`).join('');
+
+      // Regions
+      const cities = { 'Hyderabad': 45, 'Kakinada': 32, 'Vijayawada': 28, 'Bengaluru': 25 };
+      document.getElementById('regionInsights').innerHTML = Object.entries(cities).map(([city, count]) => `
+        <div style="margin-bottom:.8rem">
+          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.2rem"><span>${city}</span><span>${count}%</span></div>
+          <div style="height:6px;background:#eee;border-radius:10px"><div style="width:${count}%;background:var(--g);height:100%;border-radius:10px"></div></div>
+        </div>`).join('');
+    }
+
+    // PRODUCTS TABLE
+    function renderProductsTable() {
+      let products = getAllProducts();
+      const search = document.getElementById('pSearch').value.toLowerCase();
+      if ( search) products = products.filter(p => p.name.toLowerCase().includes(search) || p.category.toLowerCase().includes(search));
+
+document.getElementById('productsBody').innerHTML = products.map(p => `
+    <tr>
+      <td><img src="${p.image}" class="product-thumb" alt="${p.name}" onerror="this.src='assets/akshayapaatra-logo.jpeg'"/></td>
+      <td><strong style="font-size:.88rem">${p.name}</strong></td>
+      <td style="text-transform:capitalize;font-size:.82rem">${p.category}</td>
+      <td style="font-size:.88rem">${fmt(p.priceBase)}</td>
+      <td>
+        <select onchange="updateStockQuick(${p.id}, this.value)" style="font-size:.75rem;padding:.2rem;border-radius:4px;border:1px solid #ddd">
+          <option value="in" ${p.stock === 'in' ? 'selected' : ''}>In Stock</option>
+          <option value="low" ${p.stock === 'low' ? 'selected' : ''}>Low Stock</option>
+          <option value="out" ${p.stock === 'out' ? 'selected' : ''}>Out Stock</option>
+        </select>
+      </td>
+      <td style="white-space:nowrap">
+        <button class="btn-edit" onclick="openProductModal(${p.id})">Edit</button>
+        <button class="btn-danger" style="font-size:.7rem;padding:.3rem .6rem" onclick="deleteProduct(${p.id})">Del</button>
+      </td>
+    </tr>`).join('');
+    }
+
+    function updateStockQuick(id, val) {
+      c      ods = getAdminProducts();
+      co       getAllProducts().find(x => x.id === id);
+      if               c        ting = prods.find(x => x.id === id);
+        if        g)  existing.stock = val;
+        el        push({ ...p, stoc k: val });
+         s        oducts(prods); renderProductsTable(); showAdminToast('Stock updated!');
+      }
+          function deleteProduct(id) {
+      if (!      (' Delete this product?')) return;
+      const      = getAdminProducts();
+      const       AllProducts().find(x => x.id === id);
+      if (p)           const         = prods.find(x => x.id === id);
+        if (ex        xi sting.deleted = true;
+        else p        ({ ...p, deleted:  true });
+        s etAd        ts(prods); renderProductsTable(); showAdminToast('Product deleted!');
+      }
+    }
+      nction bulkAdjustPrices() {
+      const cat = prompt("Which category? (sweets/snacks/podi/all)", "all");
+      if (!cat) return; 
+      const pct = parseFloat(prompt("Percentage change? (e.g. 10 for +10%, -5 for -5%)", "0"));
+      if (isNaN(pct))  return;
+      const prods = getAdminProducts();
+      const all = getAllProducts();
+      all.forEach(p => {
+        if (cat === 'al l' || p.category === cat) {
+          const existing = prods.find(x => x.id === p.id);
+          const target = existing || { ...p };
+            target.priceBase = Math.round(target.priceBase * (1 + pct / 100));
+            if (!exist ing) prods.push(target);
+        }
+      });
+      setAdminProducts(prods); renderProductsTable(); showAdminToast(`Bulk price adjusted by ${pct}%`);
+    }
+
+    function bulkStockToggle() {
+      const cat = prompt("Which category? (sweets/snacks/podi/all)", "all");
+      const status = prompt("Set status to? (in/out/low)", "in");
+      if (!cat  || !['in', 'out' , 'low '].includes(status)) return;
+      const prods = getAdminProducts();
+      const all = getAllProducts();
+      all.forEach(p => {
+        if (ca t === 'all' || p.category === cat) {
+          const existing = prods.find(x => x.id === p.id);
+          const target = existing || { .. .p } ;
+          target.stock = status;
+          if  (!existing) prods.push(target);
+        }
+      });
+      setAdminProducts(prods); renderProductsTable(); showAdminToast(`Bulk stock set to ${status}`);
+    }
+
+    // ORDERS
+    let currentOrderFilter = 'all';
+    function filterOrders(status, el) {
+      currentOrderFilter = status;
+      document.querySelectorAll('.order-filter').forEach(f => f.classList.remove('active'));
+      el.classList.add('active');
+      renderOrders();
+    }
+
+    function renderOrders() {
+      let orders = getOrders();
+      if  (currentOrderFilter !== 'all') {
+        orders = orders.filter(o => o.status === currentOrderFilter);
+      }
+      document.getElementById('ordersBody').innerHTML = orders.map(o => `
+    <tr>
+      <td><strong>#${String(o.id).slice(-6)}</strong></td>
+      <td style="font-size:.78rem">${o.date || '—'}</td>
+      <td style="font-size:.82rem">${(o.shipping && o.shipping.name) || 'N/A'}</td>
+      <td>${fmt(o.total || 0)}</td>
+      <td><span class="badge badge-${o.status || 'pending'}">${(o.status || 'pending').toUpperCase()}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn-edit" style="padding:.3rem .6rem" onclick="viewOrder(${o.id})">View</button>
+        <button class="btn-edit" style="background:#25D366;color:white;border:none;padding:.3rem .6rem" onclick="sendWhatsApp(${o.id})">WA</button>
+        <button class="btn-danger" style="font-size:.7rem;padding:.3rem .6rem" onclick="deleteOrder(${o.id})">Del</button>
+      </td>
+    </tr>`).join('') || `<tr><td colspan="6" style="text-align:center;color:#aaa;padding:2rem">No ${currentOrderFilter !== 'all' ? currentOrderFilter : ''} orders found.</td></tr>`;
+    }
+
+    function deleteOrder(id) {
+      i f (!confirm('Delete this order record permanently?')) return;
+      const orders = getOrders().filter(o => o.id !== id);
+      setOrders(orders);
+      renderOrders();
+      showAdminToast('Order deleted.');
+    }
+
+    function bulkDeleteOrders() {
+       if (!confirm('Delete ALL Delivered and Cancelled orders to clean up?')) return;
+      const orders = getOrders().filter(o => o.status !== 'delivered' && o.status !== 'cancelled');
+      setOrders(orders);
+      renderOrders();
+      showAdminToast('Cleanup complete!');
+    }
+
+    function sendWhatsApp(id) {
+      const o = getOrders().find(x => x.id === id);
+       if (!o) return;
+      const s = o.shipping || {};
+      const msg = encodeURIComponent(`Hi ${s.name}, your Akshaya Paatra order #${String(o.id).slice(-6)} is being prepared! Total: ${fmt(o.total)}. Delivery soon!`);
+      window.open(`https://wa.me/${(s.p ho ne || '').replace( /\D/g, '')}?text=${msg}`, '_blank');
+    }
+
+    function viewOrder(id) {
+      const o = getOrders().find(x => x.id === id);
+      if (!o) return;
+      const s = o.shipping || {};
+      document.getElementById('orderDetailContent').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;font-size:.85rem">
+      <div><strong>Shipping:</strong><p>${s.name}<br/>${s.phone}<br/>${s.address}, ${s.city}</p></div>
+      <div><strong>Order:</strong><p>Status: ${o.status.toUpperCase()}<br/>Method: ${o.paymentMethod.toUpperCase()}<br/>Total: ${fmt(o.total)}</p></div>
+    </div>
+    <table style="width:100%;font-size:.85rem;border-top:1px solid #eee">
+      <tbody>${o.items.map(i => `<tr><td style=\"padding:.5rem\">${i.name}</td><td style=\"padding:.5rem\">x${i.qty}</td><td style=\"padding:.5rem\">${fmt( i .price * i.qty)}</td></tr>`).join('')}</tbody>
+    </table>
+    <div style="margin-top:1.5rem;display:flex;justify-content:space-between;align-items:center">
+      <select onchange=\"updateOrderStatus(${o.id},this.value)\" style=\"padding:.4rem;border-radius:4px\">
+        <option value=\"pending\" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+        <option value=\"shipped\" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+        <option value=\"delivered\" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+      </select>
+      <div style=\"display:flex;gap:.5rem\">
+        <button class=\"btn-edit\" onclick=\"printReceipt(${o.id})\">Print</button>
+        <button class=\"btn-primary\" onclick=\"document.getElementById('orderDetailModal').classList.remove('open')\">Close</button>
+      </div>
+    </div>`;
+      document.getElementById('orderDetailModal').classList.add('open');
+    }
+
+    function updateOrderStatus(id, status) {
+      const orders = getOrders();
+      const o = orders.find(x => x.id === id);
+      if (o) { o.status = status; setOrders(orders); renderOrders(); showAdminToast('Status updated!'); }
+    }
+
+    function printRecei      {
+      const o = getOrders().find(x => x.id =      
+      const s = o.shipping             const receipt = `AKSHAYA PAATRA RECEIPT\nOrder: #${String(o.id).slice(-6)}\nDate: ${o.date}\n\nCustomer: ${s.name}\nPhone: ${s.phone}\n\nTotal: ${fmt(o.total)}\n\nThank y           const w = window.open('', '_blank'); w.document.write('<pre>' + receipt + '</pre>'); w.print();
+    }
+
+    // SETTINGS
+    function initSettings() {
+      const s = JSON.parse(localStorage.getItem('siteSettings') || '{"phone":"+91 91480 25377","email":"akshayapaatra@gmail.com","freeShip":1000,"shipFee":100,"marquee":"🙏 Traditional Konaseema Flavours — Pure Ghee Sweets Handcrafted with Love 🏙️"}');
+      document.getElementById('setPhone').value = s.phone;
+      document.getElementById('setEmail').value = s.email;
+      document.getElementById('setFreeShip').value = s.freeShip;
+      document.getElementById('setShipFee').value = s.shipFee;
+      document.getElementById('setMarquee').value = s.marquee;
+    }
+    function saveSettings(e) {
+      e.preventDefault();
+      const s = {
+        phone: document.getElementById('setPhone').value,
+        email: document.getElementById('setEmail').value,
+        freeShip: parseInt(document.getElementById('setFreeShip').value),
+        shipFee: parseInt(document.getElementById('setShipFee').value),
+        marquee: document.getElementById('setMarquee').value
+      };
+      localStorage.setItem('siteSettings', JSON.stringify(s));
+      showAdminToast("Settings updated live!");
+    }
+
+    // PRODUCT MODAL
+    let editingId = null;
+    function openProductModal(id) {
+      editingId = id || null;
+      document.getElementById('modalTitle').textContent = id ? 'Edit Product' : 'Add New Product';
+      if (id) {
+        const p = getAllProducts().find(x => x.id === id);
+        if (!p) return;
+        document.getElementById('pId').value = p.id;
+        document.getElementById('pName').value = p.name;
+        document.getElementById('pCat').value = p.category;
+        document.getElementById('pPrice').value = p.priceBase;
+        document.getElementById('pStock').value = p.stock;
+        document.getElementById('pBadge').value = p.badge || '';
+        document.getElementById('pImages').value = (p.images || [p.image]).join('\n');
+        document.getElementById('pDesc').value = p.desc || '';
+        document.getElementById('pWeights').value = (p.weights || []).join(', ');
+      } else {
+        document.getElementById('productForm').reset();
+      }
+      document.getElementById('productModal').classList.add('open');
+    }
+    function closeProductModal() { document.getElementById('productModal').classList.remove('open'); }
+
+    function saveProduct(e) {
+      e.preventDefault();
+      const overrides = getAdminProducts();
+      const newP = {
+        id: editingId || Date.now(),
+        name: document.getElementById('pName').value,
+        category: document.getElementById('pCat').value,
+        priceBase: +document.getElementById('pPrice').value,
+        stock: document.getElementById('pStock').value,
+        badge: document.getElementById('pBadge').value || 'IN STOCK',
+        image: document.getElementById('pImages').value.split('\n')[0] || 'assets/akshayapaatra-logo.jpeg',
+        desc: document.getElementById('pDesc').value,
+        weights: document.getElementById('pWeights').value.split(',').map(w => w.trim()).filter(Boolean)
+      };
+      const idx = overrides.findIndex(p => p.id === newP.id);
+      idx >= 0 ? overrides[idx] = newP : overrides.push(newP);
+      setAdminProducts(overrides); closeProductModal(); renderProductsTable(); showAdminToast('Product saved!');
+    }
+
+    // BANNERS
+    function renderBanners() {
+      const banners = getBanners();
+      document.getElementById('bannerList').innerHTML = banners.map(b => `
+    <div style="background:#fff;border:1px solid #eee;border-radius:.8rem;padding:1.2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;border-left:5px solid ${b.color || '#0f3826'};box-shadow:0 4px 12px rgba(0,0,0,0.03)">
+      <div style="flex:1;min-width:200px">
+        <span style="font-size:.7rem;font-weight:700;text-transform:uppercase;padding:.25rem .7rem;border-radius:50px;background:${b.color || '#0f3826'}15;color:${b.color || '#0f3826'};letter-spacing:.05em">${b.festival || 'General'}</span>
+        <strong style="display:block;margin-top:.5rem;font-family:'Cinzel',serif;font-size:1rem">${b.title}</strong>
+        <p style="font-size:.8rem;color:#666;margin-top:.3rem">${b.tag} • ${b.desc}</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:1.2rem;flex-shrink:0">
+        <button onclick="openBannerEdit(${b.id})" style="background:#f0f0f0;padding:.4rem .8rem;border-radius:6px;font-size:.75rem;font-weight:600;color:#555">Edit</button>
+        <label style="display:flex;align-items:center;gap:.5rem;font-size:.8rem;cursor:pointer">
+          <input type="checkbox" ${b.active ? 'checked' : ''} onchange="toggleBanner(${b.id},this.checked)"/> Active
+        </label>
+      </div>
+    </div>`).join('');
+ 
+
+    function toggleBanner(id, val) {
+      const banners = getBanners();
+      const b = banners.find(x => x.id === id);
+      if (b) { b.active = val; setBanners(banners); renderBanners(); showAdminToast('Banner status updated.'); }
+    }
+
+    function openBannerEdit(id) {
+      const b = getBanners().find(x => x.id === id);
+      i f (!b) return;
+      document.getElementById('bId').value = b.id;
+      document.getElementById('bTitle').value = b.title;
+      document.getElementById('bTag').value = b.tag;
+      document.getElementById('bDesc').value = b.desc;
+      document.getElementById('bDisc').value = b.discount || '';
+      document.getElementById('bCat').value = b.cat || 'sweets';
+      document.getElementById('bColor').value = b.color || '#0f3826';
+      document.getElementById('bannerModal').classList.add('open');
+    }
+
+    function closeBannerModal() { document.getElementById('bannerModal').classList.remove('open'); }
+
+    function saveBanner(e) {
+      e.preventDefault();
+      const id = parseInt(document.getElementById('bId').value);
+      const banners = getBanners();
+      const idx = banners.findIndex(x => x.id === id);
+       if (idx === -1) return;
+      banners[idx]  = { ...banners[idx], title: document.getElementById('bTitle').value, tag: document.getElementById('bTag').value, desc: document.getElementById('bDesc').value, discount: document.getElementById('bDisc').value, cat: document.getElementById('bCat').value, color: document.getElementById('bColor').v alue };
+      setBanners(banners); renderBanners(); closeBannerModal(); showAdminToast("Banner updated!");
+    }
+
+    function resetBannersToDefaults() { if (confirm("Reset all?")) { localStorage.removeItem("adminBanners"); renderBanners(); } }
+
+    function showAdminToast(msg) {
+      let t = document.getElementById('adminToast');
+      if (!t) { t = document.createElement('div'); t.id = 'adminToast'; t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:#0f3826;color:#fff;padding:.8rem 1.8rem;border-radius:50px;font-weight:600;z-index:9999;opacity:0;transition:.3s ease'; document.body.appendChild(t); }
+      t.textContent = msg; t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)';
+      setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(80px)'; }, 3000);
+    }
+
+    function initAdmin() { renderDashboard(); initSettings(); }
+    window.addEventListener('DOMContentLoaded', () => {
+      if (sessionStorage.getItem('adminAuth') === '1') {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminApp').style.display = 'block';
+        initAdmin();
+      }
+   );
+  </script>
+
+  <!-- ORDER DETAIL MODAL -->
+  <div class="modal-bg" id="orderDetailModal">
+    <div class="modal-content" style="max-width:680px">
+      <div class="modal-header">
+        <h3>Order Details</h3>
+        <button class="modal-close-btn"
+          onclick="document.getElementById('orderDetailModal').classList.remove('open')">&#x2715;</button>
+      </div>
+      <div id="orderDetailContent"></div>
+    </div>
+  </div>
+</body>
+
+</html>

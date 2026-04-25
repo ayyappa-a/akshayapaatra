@@ -667,28 +667,42 @@ const syncFromCloud = async () => {
     if (error) { console.warn('Supabase fetch error:', error.message); return; }
     if (!data || data.length === 0) return; // No cloud data yet
 
-    // Map snake_case DB columns → camelCase JS
-    const cloudProducts = data.map(p => ({
-      id: p.id,
-      name: p.name,
-      category: p.category,
-      priceBase: p.price_base,
-      stock: p.stock || 'in',
-      badge: p.badge || 'IN STOCK',
-      image: p.image || 'assets/akshayapaatra-logo.jpeg',
-      desc: p.description || '',
-      weights: p.weights || [],
-      deleted: false
-    }));
+    // ONLY use products that have a valid hosted image (http URL)
+    // Products with assets/items/ paths in DB are ignored - keeps local/default
+    const validCloudProducts = data
+      .filter(p => p.image && p.image.startsWith('http'))
+      .map(p => ({
+        id: p.id,
+        name: p.name,
+        category: p.category,
+        priceBase: p.price_base,
+        stock: p.stock || 'in',
+        badge: p.badge || 'IN STOCK',
+        image: p.image,
+        desc: p.description || '',
+        weights: p.weights || [],
+        deleted: false
+      }));
 
-    // Save to localStorage so getProducts() picks it up
-    localStorage.setItem('adminProducts', JSON.stringify(cloudProducts));
+    if (!validCloudProducts.length) {
+      console.log('No valid cloud products with http images found. Keeping local data.');
+      return;
+    }
+
+    // MERGE: Update only products that have valid cloud images, keep rest unchanged
+    const existing = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+    validCloudProducts.forEach(cp => {
+      const idx = existing.findIndex(p => p.id === cp.id);
+      if (idx >= 0) existing[idx] = cp;
+      else existing.push(cp);
+    });
+    localStorage.setItem('adminProducts', JSON.stringify(existing));
 
     // Re-render everything with fresh cloud data
     renderProducts();
     initDynamicHero();
     renderStoreBanners();
-    console.log(`✅ Synced ${cloudProducts.length} products from cloud`);
+    console.log(`✅ Synced ${validCloudProducts.length} products with valid images from cloud`);
   } catch (e) {
     console.warn('Cloud sync failed, using local data:', e);
   }

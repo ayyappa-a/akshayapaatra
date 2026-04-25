@@ -1645,22 +1645,33 @@ document.getElementById('productsBody').innerHTML = products.map(p => `
       } catch (e) { console.warn('Cloud upsert failed:', e); }
     };
 
-    // Load ALL products from Supabase → overwrite localStorage
+    // Load ALL products from Supabase → merge with localStorage
     const loadFromCloud = async () => {
       if (!db) return;
       try {
-        // Load products
+        // Load products - only apply ones with valid http images
         const { data: pData, error: pErr } = await db.from('products').select('*');
         if (!pErr && pData && pData.length) {
-          const mapped = pData.map(p => ({
-            id: p.id, name: p.name, category: p.category,
-            priceBase: p.price_base, stock: p.stock, badge: p.badge,
-            image: p.image, desc: p.description, weights: p.weights || [],
-            deleted: p.deleted || false
-          }));
-          setAdminProducts(mapped);
-          renderProductsTable();
-          renderDashboard();
+          const validCloud = pData.filter(p => p.image && p.image.startsWith('http'));
+          if (validCloud.length) {
+            const mapped = validCloud.map(p => ({
+              id: p.id, name: p.name, category: p.category,
+              priceBase: p.price_base, stock: p.stock, badge: p.badge,
+              image: p.image, desc: p.description, weights: p.weights || [],
+              deleted: p.deleted || false
+            }));
+            // Merge with existing local data
+            const existing = getAdminProducts();
+            mapped.forEach(cp => {
+              const idx = existing.findIndex(p => p.id === cp.id);
+              if (idx >= 0) existing[idx] = cp;
+              else existing.push(cp);
+            });
+            setAdminProducts(existing);
+            renderProductsTable();
+            renderDashboard();
+            showAdminToast(`☁️ Loaded ${mapped.length} products from cloud`);
+          }
         }
         // Load orders
         await loadOrdersFromCloud();

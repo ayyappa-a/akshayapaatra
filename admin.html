@@ -829,7 +829,6 @@
           <span class="topbar-title" id="topbarTitle">Dashboard</span>
           <div style="display:flex;align-items:center;gap:.8rem">
             <button onclick="loadOrdersFromCloud()" style="background:#1a5c3f;color:#fff;border:none;padding:.4rem 1rem;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer">📦 Refresh Orders</button>
-            <button id="syncBtn" onclick="syncAllToCloud()" style="background:#0f3826;color:#fff;border:none;padding:.4rem 1rem;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.4rem">☁️ Sync to Cloud</button>
             <div class="topbar-user">
               <div class="user-avatar">A</div><span>Appuuu</span>
             </div>
@@ -1153,14 +1152,6 @@
       return merged.filter(p => !p.deleted);
     };
 
-    // Like getAllProducts but includes deleted items (needed for full cloud sync)
-    const getAllProductsWithDeleted = () => {
-      const overrides = getAdminProducts();
-      const merged = [...DEFAULT_PRODUCTS];
-      overrides.forEach(ap => { const i = merged.findIndex(p => p.id === ap.id); i >= 0 ? merged[i] = ap : merged.push(ap); });
-      return merged; // NO filter - includes deleted
-    };
-
     // AUTH
     function doLogin() {
       const u = document.getElementById('uname').value.trim();
@@ -1195,13 +1186,13 @@
       const products = getAllProducts();
       const revenue = orders.filter(o => o.status !== 'cancelled').reduce((s, o) => s + (o.total || 0), 0);
       const catCount = { sweets: 0, snacks: 0, podi: 0 };
-      products.forEach(p => { if  (catCount[p.category] !== undefined) catCount[p.category]++; });  document.getElementById('statsGrid').innerHTML = `
+      products.forEach(p => { if (catCount[p.category] !== undefined) catCount[p.category]++; }); document.getElementById('statsGrid').innerHTML = `
     <div class="stat-card"><div class="stat-icon green">📦</div><div><div class="stat-val">${orders.length}</div><div class="stat-lbl">Total Orders</div></div></div>
     <div class="stat-card"><div class="stat-icon gold">💰</div><div><div class="stat-val">${fmt(revenue)}</div><div class="stat-lbl">Revenue</div></div></div>
     <div class="stat-card"><div class="stat-icon orange">🛍️</div><div><div class="stat-val">${products.length}</div><div class="stat-lbl">Products</div></div></div>
     <div class="stat-card"><div class="stat-icon blue">📈</div><div><div class="stat-val">${orders.length ? (revenue / orders.length).toFixed(0) : 0}</div><div class="stat-lbl">Avg Order</div></div></div>`;
 
-  document.getElementById('dashOrdersBody').innerHTML = orders.slice(0, 5).map(o => `
+      document.getElementById('dashOrdersBody').innerHTML = orders.slice(0, 5).map(o => `
     <tr style="cursor:pointer" onclick="viewOrder(${o.id})">
       <td>#${String(o.id).slice(-6)}</td>
       <td>${o.date || '—'}</td>
@@ -1218,7 +1209,7 @@
 
       //ue Chart (Last 7 Days Mockup logic)
       const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-       const revData = [4500, 7200, 3100, 8900, 12000, 15000, 9800]; // Mockup for visual
+      const revData = [4500, 7200, 3100, 8900, 12000, 15000, 9800]; // Mockup for visual
       const max = Math.max(...revData);
       document.getElementById('revenueChart').innerHTML = revData.map((v, i) => `
         <div style="flex:1;background:var(--gold);height:${(v / max) * 100}%;border-radius:4px 4px 0 0;position:relative" title="${days[i]}: ${fmt(v)}">
@@ -1249,14 +1240,14 @@
       const products = getAllProducts();
       const revenue = orders.filter(o => o.status !== 'cancelled').reduce((s, o) => s + (o.total || 0), 0);
       const catCount = { sweets: 0, snacks: 0, podi: 0 };
-      products.forEach(p => { if  (catCount[p.category] !== undefined) catCount[p.category]++; });
- document.getElementById('statsGrid').innerHTML = `
+      products.forEach(p => { if (catCount[p.category] !== undefined) catCount[p.category]++; });
+      document.getElementById('statsGrid').innerHTML = `
     <div class="stat-card"><div class="stat-icon green">📦</div><div><div class="stat-val">${orders.length}</div><div class="stat-lbl">Total Orders</div></div></div>
     <div class="stat-card"><div class="stat-icon gold">💰</div><div><div class="stat-val">${fmt(revenue)}</div><div class="stat-lbl">Revenue</div></div></div>
     <div class="stat-card"><div class="stat-icon orange">🛍️</div><div><div class="stat-val">${products.length}</div><div class="stat-lbl">Products</div></div></div>
     <div class="stat-card"><div class="stat-icon blue">📈</div><div><div class="stat-val">${orders.length ? (revenue / orders.length).toFixed(0) : 0}</div><div class="stat-lbl">Avg Order</div></div></div>`;
 
-   document.getElementById('dashOrdersBody').innerHTML = orders.slice(0, 5).map(o => `
+      document.getElementById('dashOrdersBody').innerHTML = orders.slice(0, 5).map(o => `
     <tr style="cursor:pointer" onclick="viewOrder(${o.id})">
       <td>#${String(o.id).slice(-6)}</td>
       <td>${o.date || '—'}</td>
@@ -1272,8 +1263,8 @@
       const products = getAllProducts();
 
       // e Chart Mockup
-      const days = ['Mon', 'Tue', 'Wed', ' Thu',  'Fri',  'Sat' , 'Sun '];
-       const revData = [4500, 7200, 3100, 8900, 12000, 15000, 9800];
+      const days = ['Mon', 'Tue', 'Wed', ' Thu', 'Fri', 'Sat', 'Sun '];
+      const revData = [4500, 7200, 3100, 8900, 12000, 15000, 9800];
       const max = Math.max(...revData);
       document.getElementById('revenueChart').innerHTML = revData.map((v, i) => `
         <div style="flex:1;background:var(--gold);height:${(v / max) * 100}%;border-radius:4px 4px 0 0;position:relative" title="${days[i]}: ${fmt(v)}">
@@ -1301,9 +1292,9 @@
     function renderProductsTable() {
       let products = getAllProducts();
       const search = document.getElementById('pSearch').value.toLowerCase();
-      if ( search) products = products.filter(p => p.name.toLowerCase().includes(search) || p.category.toLowerCase().includes(search));
+      if (search) products = products.filter(p => p.name.toLowerCase().includes(search) || p.category.toLowerCase().includes(search));
 
-document.getElementById('productsBody').innerHTML = products.map(p => `
+      document.getElementById('productsBody').innerHTML = products.map(p => `
     <tr>
       <td><img src="${p.image}" class="product-thumb" alt="${p.name}" onerror="this.src='assets/akshayapaatra-logo.jpeg'"/></td>
       <td><strong style="font-size:.88rem">${p.name}</strong></td>
@@ -1619,22 +1610,19 @@ document.getElementById('productsBody').innerHTML = products.map(p => `
 
     // ═══ SUPABASE CLOUD FUNCTIONS ═══
 
-    // Map JS product → Supabase row (with image fallback for broken paths)
-    const toDbRow = p => {
-      const img = (p.image && p.image.startsWith('http')) ? p.image : 'assets/akshayapaatra-logo.jpeg';
-      return {
-        id: p.id,
-        name: p.name,
-        category: p.category,
-        price_base: p.priceBase,
-        stock: p.stock || 'in',
-        badge: p.badge || 'IN STOCK',
-        image: img,
-        description: p.desc || '',
-        weights: p.weights || [],
-        deleted: p.deleted || false
-      };
-    };
+    // Map JS product → Supabase row
+    const toDbRow = p => ({
+      id: p.id,
+      name: p.name,
+      category: p.category,
+      price_base: p.priceBase,
+      stock: p.stock || 'in',
+      badge: p.badge || 'IN STOCK',
+      image: p.image || '',
+      description: p.desc || '',
+      weights: p.weights || [],
+      deleted: p.deleted || false
+    });
 
     // Upsert single product to Supabase
     const upsertProductToCloud = async (p) => {
@@ -1645,33 +1633,21 @@ document.getElementById('productsBody').innerHTML = products.map(p => `
       } catch (e) { console.warn('Cloud upsert failed:', e); }
     };
 
-    // Load ALL products from Supabase → merge with localStorage
+    // Load ALL products from Supabase → overwrite localStorage
     const loadFromCloud = async () => {
       if (!db) return;
       try {
-        // Load products - only apply ones with valid http images
         const { data: pData, error: pErr } = await db.from('products').select('*');
-        if (!pErr && pData && pData.length) {
-          const validCloud = pData.filter(p => p.image && p.image.startsWith('http'));
-          if (validCloud.length) {
-            const mapped = validCloud.map(p => ({
-              id: p.id, name: p.name, category: p.category,
-              priceBase: p.price_base, stock: p.stock, badge: p.badge,
-              image: p.image, desc: p.description, weights: p.weights || [],
-              deleted: p.deleted || false
-            }));
-            // Merge with existing local data
-            const existing = getAdminProducts();
-            mapped.forEach(cp => {
-              const idx = existing.findIndex(p => p.id === cp.id);
-              if (idx >= 0) existing[idx] = cp;
-              else existing.push(cp);
-            });
-            setAdminProducts(existing);
-            renderProductsTable();
-            renderDashboard();
-            showAdminToast(`☁️ Loaded ${mapped.length} products from cloud`);
-          }
+        if (!pErr && pData) {
+          const mapped = pData.map(p => ({
+            id: p.id, name: p.name, category: p.category,
+            priceBase: p.price_base, stock: p.stock, badge: p.badge,
+            image: p.image, desc: p.description, weights: p.weights || [],
+            deleted: p.deleted || false
+          }));
+          setAdminProducts(mapped);
+          renderProductsTable();
+          renderDashboard();
         }
         // Load orders
         await loadOrdersFromCloud();
@@ -1700,21 +1676,17 @@ document.getElementById('productsBody').innerHTML = products.map(p => `
       } catch (e) { console.warn('loadOrdersFromCloud failed:', e); }
     };
 
-    // Sync ALL current local products to Supabase (including deleted)
+    // Sync ALL current local products to Supabase
     const syncAllToCloud = async () => {
       if (!db) { showAdminToast('⚠️ Supabase not connected'); return; }
       const btn = document.getElementById('syncBtn');
       if (btn) { btn.textContent = '⏳ Syncing...'; btn.disabled = true; }
       try {
-        // Get ALL products including deleted ones
-        const all = getAllProductsWithDeleted();
+        const all = getAllProducts();
         const rows = all.map(toDbRow);
-        // Upsert all (deleted=true items will be hidden on storefront via .eq('deleted',false))
         const { error } = await db.from('products').upsert(rows, { onConflict: 'id' });
         if (error) throw error;
-        const active = rows.filter(r => !r.deleted).length;
-        const deleted = rows.filter(r => r.deleted).length;
-        showAdminToast(`✅ ${active} active, ${deleted} deleted synced to cloud!`);
+        showAdminToast(`✅ ${rows.length} products synced to cloud!`);
       } catch (e) {
         console.error('syncAllToCloud failed:', e);
         showAdminToast('❌ Sync failed: ' + e.message);
@@ -1734,6 +1706,17 @@ document.getElementById('productsBody').innerHTML = products.map(p => `
       <div id="orderDetailContent"></div>
     </div>
   </div>
+</body>
+
+</html>
+<div class="modal-header">
+  <h3>Order Details</h3>
+  <button class="modal-close-btn"
+    onclick="document.getElementById('orderDetailModal').classList.remove('open')">&#x2715;</button>
+</div>
+<div id="orderDetailContent"></div>
+</div>
+</div>
 </body>
 
 </html>

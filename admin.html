@@ -1648,6 +1648,23 @@
       } catch (e) { console.warn('Cloud upsert failed:', e); }
     };
 
+    const upsertSystemSettingsToCloud = async () => {
+      if (!db) return;
+      try {
+        const banners = getBanners();
+        const settings = JSON.parse(localStorage.getItem('siteSettings') || '{}');
+        const payload = {
+          id: 9999999999,
+          name: 'SYSTEM_SETTINGS',
+          category: 'system',
+          description: JSON.stringify({ banners, settings }),
+          price_base: 0,
+          deleted: false
+        };
+        await db.from('products').upsert(payload);
+      } catch (e) { console.error('Failed to sync system settings:', e); }
+    };
+
     // Load ALL products from Supabase → overwrite localStorage
     const loadFromCloud = async () => {
       if (!db) return;

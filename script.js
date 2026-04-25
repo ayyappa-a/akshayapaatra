@@ -294,7 +294,13 @@ window.removeItem = id => { cart = cart.filter(c => c.id !== id); saveCart(); };
 const renderCart = () => {
   const qty = cart.reduce((s, i) => s + i.qty, 0);
   const sub = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const shipping = sub >= 500 ? 0 : 60;
+
+  // Dynamic shipping from settings
+  const s = JSON.parse(localStorage.getItem('siteSettings') || '{"freeShip":500,"shipFee":60}');
+  const freeLimit = s.freeShip || 500;
+  const fee = s.shipFee || 60;
+  
+  const shipping = sub >= freeLimit ? 0 : fee;
   const total = sub + shipping;
 
   cartBadge.textContent = qty;
@@ -334,9 +340,13 @@ const renderCart = () => {
   cartShipping.className = 'shipping-val' + (shipping === 0 ? ' free' : '');
   cartTotal.textContent = fmt(total);
 
-  const remaining = 500 - sub;
-  if (remaining > 0) { freeShipNote.hidden = false; freeShipLeft.textContent = fmt(remaining); }
-  else { freeShipNote.hidden = true; }
+  const remaining = freeLimit - sub;
+  if (remaining > 0) {
+    freeShipNote.hidden = false;
+    freeShipLeft.textContent = fmt(remaining);
+  } else {
+    freeShipNote.hidden = true;
+  }
 };
 
 cartBtn.addEventListener('click', openCart);
@@ -690,6 +700,7 @@ const syncFromCloud = async () => {
         const parsed = JSON.parse(sysRow.desc);
         if (parsed.banners) localStorage.setItem('adminBanners', JSON.stringify(parsed.banners));
         if (parsed.settings) localStorage.setItem('siteSettings', JSON.stringify(parsed.settings));
+        syncStoreSettings(); // Apply UI changes immediately
       } catch(e) { console.warn('Failed to parse system settings'); }
     }
 

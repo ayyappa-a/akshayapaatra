@@ -69,11 +69,11 @@ const getProducts = () => {
   const admin = JSON.parse(localStorage.getItem('adminProducts') || '[]');
   const isSynced = localStorage.getItem('cloudSynced') === 'true';
   if (isSynced) {
-    return admin.filter(p => !p.deleted);
+    return admin.filter(p => !p.deleted && p.category !== 'system');
   }
   const merged = [...DEFAULT_PRODUCTS];
   admin.forEach(ap => { const i = merged.findIndex(p => p.id === ap.id); i >= 0 ? merged[i] = ap : merged.push(ap); });
-  return merged.filter(p => !p.deleted);
+  return merged.filter(p => !p.deleted && p.category !== 'system');
 };
 
 const fmt = p => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(p);
@@ -682,6 +682,16 @@ const syncFromCloud = async () => {
       weights: p.weights || [],
       deleted: false
     }));
+
+    // Extract system settings if present
+    const sysRow = cloudProducts.find(p => p.category === 'system');
+    if (sysRow && sysRow.desc) {
+      try {
+        const parsed = JSON.parse(sysRow.desc);
+        if (parsed.banners) localStorage.setItem('adminBanners', JSON.stringify(parsed.banners));
+        if (parsed.settings) localStorage.setItem('siteSettings', JSON.stringify(parsed.settings));
+      } catch(e) { console.warn('Failed to parse system settings'); }
+    }
 
     localStorage.setItem('adminProducts', JSON.stringify(cloudProducts));
     localStorage.setItem('cloudSynced', 'true');

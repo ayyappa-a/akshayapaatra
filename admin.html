@@ -1149,11 +1149,11 @@
       const admin = getAdminProducts();
       const isSynced = localStorage.getItem('cloudSynced') === 'true';
       if (isSynced) {
-        return admin.filter(p => !p.deleted);
+        return admin.filter(p => !p.deleted && p.category !== 'system');
       }
       const merged = [...DEFAULT_PRODUCTS];
       admin.forEach(ap => { const i = merged.findIndex(p => p.id === ap.id); i >= 0 ? merged[i] = ap : merged.push(ap); });
-      return merged.filter(p => !p.deleted);
+      return merged.filter(p => !p.deleted && p.category !== 'system');
     };
 
     // AUTH
@@ -1496,7 +1496,8 @@
         marquee: document.getElementById('setMarquee').value
       };
       localStorage.setItem('siteSettings', JSON.stringify(s));
-      showAdminToast("Settings updated live!");
+      await upsertSystemSettingsToCloud();
+      showAdminToast("Settings updated & synced!");
     }
 
     // PRODUCT MODAL
@@ -1564,10 +1565,10 @@
     </div>`).join('');
     }
 
-    function toggleBanner(id, val) {
+    async function toggleBanner(id, val) {
       const banners = getBanners();
       const b = banners.find(x => x.id === id);
-      if (b) { b.active = val; setBanners(banners); renderBanners(); showAdminToast('Banner status updated.'); }
+      if (b) { b.active = val; setBanners(banners); renderBanners(); await upsertSystemSettingsToCloud(); showAdminToast('Banner status updated & synced.'); }
     }
 
     function openBannerEdit(id) {
@@ -1585,17 +1586,26 @@
 
     function closeBannerModal() { document.getElementById('bannerModal').classList.remove('open'); }
 
-    function saveBanner(e) {
+    async function saveBanner(e) {
       e.preventDefault();
       const id = parseInt(document.getElementById('bId').value);
       const banners = getBanners();
       const idx = banners.findIndex(x => x.id === id);
       if (idx === -1) return;
       banners[idx] = { ...banners[idx], title: document.getElementById('bTitle').value, tag: document.getElementById('bTag').value, desc: document.getElementById('bDesc').value, discount: document.getElementById('bDisc').value, cat: document.getElementById('bCat').value, color: document.getElementById('bColor').value };
-      setBanners(banners); renderBanners(); closeBannerModal(); showAdminToast("Banner updated!");
+      setBanners(banners); renderBanners(); closeBannerModal(); 
+      await upsertSystemSettingsToCloud();
+      showAdminToast("Banner updated & synced!");
     }
 
-    function resetBannersToDefaults() { if (confirm("Reset all?")) { localStorage.removeItem("adminBanners"); renderBanners(); } }
+    async function resetBannersToDefaults() { 
+      if (confirm("Reset all?")) { 
+        localStorage.removeItem("adminBanners"); 
+        renderBanners(); 
+        await upsertSystemSettingsToCloud();
+        showAdminToast("Banners reset to default.");
+      } 
+    }
 
     function showAdminToast(msg) {
       let t = document.getElementById('adminToast');
@@ -1644,6 +1654,16 @@
       try {
         const { data: pData, error: pErr } = await db.from('products').select('*');
         if (!pErr && pData) {
+          // Extract system settings if present
+          const sysRow = pData.find(p => p.category === 'system');
+          if (sysRow && sysRow.description) {
+            try {
+              const parsed = JSON.parse(sysRow.description);
+              if (parsed.banners) localStorage.setItem('adminBanners', JSON.stringify(parsed.banners));
+              if (parsed.settings) localStorage.setItem('siteSettings', JSON.stringify(parsed.settings));
+            } catch(e) { console.warn('Failed to parse system settings'); }
+          }
+
           const mapped = pData.map(p => ({
             id: p.id, name: p.name, category: p.category,
             priceBase: p.price_base, stock: p.stock, badge: p.badge,

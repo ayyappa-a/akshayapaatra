@@ -1486,7 +1486,7 @@
       document.getElementById('setShipFee').value = s.shipFee;
       document.getElementById('setMarquee').value = s.marquee;
     }
-    function saveSettings(e) {
+    async function saveSettings(e) {
       e.preventDefault();
       const s = {
         phone: document.getElementById('setPhone').value,

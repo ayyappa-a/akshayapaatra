@@ -15,6 +15,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Initialize Supabase client (global, available to script.js)
+    const SUPABASE_URL = 'https://vccdxhwkfcpvwelsdudv.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_KEPszt2T2ZumYI-WQ7EZeA_MC8wio5O';
+    const db = (typeof supabase !== 'undefined') ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+  </script>
   <link rel="stylesheet" href="styles.css" />
 </head>
 

@@ -5,6 +5,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Akshaya Paatra – Admin Portal</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://vccdxhwkfcpvwelsdudv.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_KEPszt2T2ZumYI-WQ7EZeA_MC8wio5O';
+    const db = (typeof supabase !== 'undefined') ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+  </script>
   <link
     href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:wght@400;600&family=Montserrat:wght@300;400;500;600;700&display=swap"
     rel="stylesheet" />
@@ -821,8 +827,11 @@
       <main class="admin-main">
         <div class="admin-topbar">
           <span class="topbar-title" id="topbarTitle">Dashboard</span>
-          <div class="topbar-user">
-            <div class="user-avatar">A</div><span>Appuuu</span>
+          <div style="display:flex;align-items:center;gap:.8rem">
+            <button id="syncBtn" onclick="syncAllToCloud()" style="background:#0f3826;color:#fff;border:none;padding:.4rem 1rem;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.4rem">☁️ Sync to Cloud</button>
+            <div class="topbar-user">
+              <div class="user-avatar">A</div><span>Appuuu</span>
+            </div>
           </div>
         </div>
         <!-- DASHBOARD TAB -->
@@ -1500,7 +1509,7 @@ document.getElementById('productsBody').innerHTML = products.map(p => `
     }
     function closeProductModal() { document.getElementById('productModal').classList.remove('open'); }
 
-    function saveProduct(e) {
+    async function saveProduct(e) {
       e.preventDefault();
       const overrides = getAdminProducts();
       const newP = {
@@ -1516,7 +1525,10 @@ document.getElementById('productsBody').innerHTML = products.map(p => `
       };
       const idx = overrides.findIndex(p => p.id === newP.id);
       idx >= 0 ? overrides[idx] = newP : overrides.push(newP);
-      setAdminProducts(overrides); closeProductModal(); renderProductsTable(); showAdminToast('Product saved!');
+      setAdminProducts(overrides); closeProductModal(); renderProductsTable();
+      // Push to Supabase
+      await upsertProductToCloud(newP);
+      showAdminToast('Product saved & synced to cloud! ☁️');
     }
 
     // BANNERS
@@ -1578,7 +1590,7 @@ document.getElementById('productsBody').innerHTML = products.map(p => `
       setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(80px)'; }, 3000);
     }
 
-    function initAdmin() { renderDashboard(); initSettings(); }
+    function initAdmin() { renderDashboard(); initSettings(); loadFromCloud(); }
     window.addEventListener('DOMContentLoaded', () => {
       if (sessionStorage.getItem('adminAuth') === '1') {
         document.getElementById('loginScreen').style.display = 'none';
@@ -1586,6 +1598,68 @@ document.getElementById('productsBody').innerHTML = products.map(p => `
         initAdmin();
       }
     });
+
+    // ═══ SUPABASE CLOUD FUNCTIONS ═══
+
+    // Map JS product → Supabase row
+    const toDbRow = p => ({
+      id: p.id,
+      name: p.name,
+      category: p.category,
+      price_base: p.priceBase,
+      stock: p.stock || 'in',
+      badge: p.badge || 'IN STOCK',
+      image: p.image || '',
+      description: p.desc || '',
+      weights: p.weights || [],
+      deleted: p.deleted || false
+    });
+
+    // Upsert single product to Supabase
+    const upsertProductToCloud = async (p) => {
+      if (!db) return;
+      try {
+        const { error } = await db.from('products').upsert([toDbRow(p)], { onConflict: 'id' });
+        if (error) console.error('Supabase upsert error:', error.message);
+      } catch (e) { console.warn('Cloud upsert failed:', e); }
+    };
+
+    // Load ALL products from Supabase → overwrite localStorage
+    const loadFromCloud = async () => {
+      if (!db) return;
+      try {
+        const { data, error } = await db.from('products').select('*');
+        if (error || !data || !data.length) return;
+        const mapped = data.map(p => ({
+          id: p.id, name: p.name, category: p.category,
+          priceBase: p.price_base, stock: p.stock, badge: p.badge,
+          image: p.image, desc: p.description, weights: p.weights || [],
+          deleted: p.deleted || false
+        }));
+        setAdminProducts(mapped);
+        renderProductsTable();
+        renderDashboard();
+        showAdminToast(`☁️ Loaded ${mapped.length} products from cloud`);
+      } catch (e) { console.warn('loadFromCloud failed:', e); }
+    };
+
+    // Sync ALL current local products to Supabase
+    const syncAllToCloud = async () => {
+      if (!db) { showAdminToast('⚠️ Supabase not connected'); return; }
+      const btn = document.getElementById('syncBtn');
+      if (btn) { btn.textContent = '⏳ Syncing...'; btn.disabled = true; }
+      try {
+        const all = getAllProducts();
+        const rows = all.map(toDbRow);
+        const { error } = await db.from('products').upsert(rows, { onConflict: 'id' });
+        if (error) throw error;
+        showAdminToast(`✅ ${rows.length} products synced to cloud!`);
+      } catch (e) {
+        console.error('syncAllToCloud failed:', e);
+        showAdminToast('❌ Sync failed: ' + e.message);
+      }
+      if (btn) { btn.textContent = '☁️ Sync to Cloud'; btn.disabled = false; }
+    };
   </script>
 
   <!-- ORDER DETAIL MODAL -->

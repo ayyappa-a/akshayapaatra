@@ -652,7 +652,44 @@ document.addEventListener('DOMContentLoaded', () => {
   renderTestimonials();
   renderCart();
   setTimeout(initGSAP, 150);
+  // Sync from Supabase and re-render if data available
+  syncFromCloud();
 });
+
+// ═══ SUPABASE CLOUD SYNC ═══
+const syncFromCloud = async () => {
+  if (typeof db === 'undefined' || !db) return;
+  try {
+    const { data, error } = await db.from('products').select('*').eq('deleted', false);
+    if (error) { console.warn('Supabase fetch error:', error.message); return; }
+    if (!data || data.length === 0) return; // No cloud data yet
+
+    // Map snake_case DB columns → camelCase JS
+    const cloudProducts = data.map(p => ({
+      id: p.id,
+      name: p.name,
+      category: p.category,
+      priceBase: p.price_base,
+      stock: p.stock || 'in',
+      badge: p.badge || 'IN STOCK',
+      image: p.image || 'assets/akshayapaatra-logo.jpeg',
+      desc: p.description || '',
+      weights: p.weights || [],
+      deleted: false
+    }));
+
+    // Save to localStorage so getProducts() picks it up
+    localStorage.setItem('adminProducts', JSON.stringify(cloudProducts));
+
+    // Re-render everything with fresh cloud data
+    renderProducts();
+    initDynamicHero();
+    renderStoreBanners();
+    console.log(`✅ Synced ${cloudProducts.length} products from cloud`);
+  } catch (e) {
+    console.warn('Cloud sync failed, using local data:', e);
+  }
+};
 
 
 

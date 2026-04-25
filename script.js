@@ -571,18 +571,20 @@ window.placeOrder = async () => {
   orders.unshift(orderData);
   localStorage.setItem('adminOrders', JSON.stringify(orders));
 
-  // Push to Supabase if available
-  if (typeof supabaseClient !== 'undefined') {
+  // Push to Supabase (so admin can see on any device)
+  if (typeof db !== 'undefined' && db) {
     try {
-      await supabaseClient.from('orders').insert([{
+      await db.from('orders').insert([{
         id: orderData.id,
         items: orderData.items,
         total: orderData.total,
         status: orderData.status,
         shipping: orderData.shipping,
+        payment_method: orderData.paymentMethod,
+        order_date: orderData.date,
         created_at: new Date().toISOString()
       }]);
-    } catch (e) { console.error('Supabase sync failed:', e); }
+    } catch (e) { console.error('Supabase order sync failed:', e); }
   }
 
   // Generate Pro WhatsApp Message

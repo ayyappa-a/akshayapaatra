@@ -828,6 +828,7 @@
         <div class="admin-topbar">
           <span class="topbar-title" id="topbarTitle">Dashboard</span>
           <div style="display:flex;align-items:center;gap:.8rem">
+            <button onclick="loadOrdersFromCloud()" style="background:#1a5c3f;color:#fff;border:none;padding:.4rem 1rem;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer">📦 Refresh Orders</button>
             <button id="syncBtn" onclick="syncAllToCloud()" style="background:#0f3826;color:#fff;border:none;padding:.4rem 1rem;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.4rem">☁️ Sync to Cloud</button>
             <div class="topbar-user">
               <div class="user-avatar">A</div><span>Appuuu</span>
@@ -1452,7 +1453,16 @@ document.getElementById('productsBody').innerHTML = products.map(p => `
     function updateOrderStatus(id, status) {
       const orders = getOrders();
       const o = orders.find(x => x.id === id);
-      if (o) { o.status = status; setOrders(orders); renderOrders(); showAdminToast('Status updated!'); }
+      if (o) {
+        o.status = status;
+        setOrders(orders);
+        renderOrders();
+        showAdminToast('Status updated!');
+        // Sync status update to Supabase
+        if (db) db.from('orders').update({ status }).eq('id', id).then(({ error }) => {
+          if (error) console.warn('Order status sync failed:', error.message);
+        });
+      }
     }
 
     function printReceipt(id) {
@@ -1628,19 +1638,44 @@ document.getElementById('productsBody').innerHTML = products.map(p => `
     const loadFromCloud = async () => {
       if (!db) return;
       try {
-        const { data, error } = await db.from('products').select('*');
-        if (error || !data || !data.length) return;
-        const mapped = data.map(p => ({
-          id: p.id, name: p.name, category: p.category,
-          priceBase: p.price_base, stock: p.stock, badge: p.badge,
-          image: p.image, desc: p.description, weights: p.weights || [],
-          deleted: p.deleted || false
-        }));
-        setAdminProducts(mapped);
-        renderProductsTable();
-        renderDashboard();
-        showAdminToast(`☁️ Loaded ${mapped.length} products from cloud`);
+        // Load products
+        const { data: pData, error: pErr } = await db.from('products').select('*');
+        if (!pErr && pData && pData.length) {
+          const mapped = pData.map(p => ({
+            id: p.id, name: p.name, category: p.category,
+            priceBase: p.price_base, stock: p.stock, badge: p.badge,
+            image: p.image, desc: p.description, weights: p.weights || [],
+            deleted: p.deleted || false
+          }));
+          setAdminProducts(mapped);
+          renderProductsTable();
+          renderDashboard();
+        }
+        // Load orders
+        await loadOrdersFromCloud();
       } catch (e) { console.warn('loadFromCloud failed:', e); }
+    };
+
+    // Load orders from Supabase → overwrite localStorage
+    const loadOrdersFromCloud = async () => {
+      if (!db) return;
+      try {
+        const { data, error } = await db.from('orders').select('*').order('created_at', { ascending: false });
+        if (error || !data) return;
+        const mapped = data.map(o => ({
+          id: o.id,
+          items: o.items || [],
+          shipping: o.shipping || {},
+          paymentMethod: o.payment_method || 'pending',
+          total: o.total || 0,
+          status: o.status || 'pending',
+          date: o.order_date || new Date(o.created_at).toLocaleString('en-IN')
+        }));
+        setOrders(mapped);
+        renderOrders();
+        renderDashboard();
+        if (mapped.length) showAdminToast(`📦 ${mapped.length} orders loaded from cloud`);
+      } catch (e) { console.warn('loadOrdersFromCloud failed:', e); }
     };
 
     // Sync ALL current local products to Supabase
